@@ -58,8 +58,8 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                 open
                 PaperProps={{
                     sx: {
-                        // backgroundColor: '#0b0b45', // 1200 이상 sidebar
-                        backgroundColor: 'white', // 1200 이상 sidebar
+                        backgroundColor: '#0b0b45', // 1200 이상 sidebar
+                        // backgroundColor: 'white', // 1200 이상 sidebar
 
                         borderRightWidth: (theme) => theme.palette.mode === 'dark' ? 1 : 0,
                         color: '#FFFFFF',
