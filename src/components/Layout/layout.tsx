@@ -12,8 +12,8 @@ interface LayoutProps {
 const RootLayout = styled('div')`
       display: flex;
       height: 100vh;
-      max-width: calc(100% - 220px);
-      left: 220px;
+      max-width: calc(100% - 240px);
+      left: 240px;
       position: relative;
       max-height: 100%;
       padding-top: 60px;

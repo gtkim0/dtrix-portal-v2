@@ -58,13 +58,13 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                 open
                 PaperProps={{
                     sx: {
-                        backgroundColor: '#0b0b45', // 1200 이상 sidebar
+                        backgroundColor: 'lightgray', // 1200 이상 sidebar
                         // backgroundColor: 'white', // 1200 이상 sidebar
 
                         borderRightWidth: (theme) => theme.palette.mode === 'dark' ? 1 : 0,
-                        color: '#FFFFFF',
+                        color: 'black',
                         width: isRootSize(),
-                        top: '60px'
+                        top: '60px',
                     }
                 }}
                 variant="permanent"
@@ -75,25 +75,10 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                         display: 'flex',
                         flexDirection: 'column',
                         height: '100%',
-                        padding:'0 10px'
+                        padding:'20px 10px'
                     }}
                 >
                     <Menu menuData={data1} />
-                    {/*<div>*/}
-                    {/*    {*/}
-                    {/*        menuList.map((menu) => (*/}
-                    {/*            <Link key={menu.id} href={menu.link}>*/}
-                    {/*                <Box sx={{p: 2, m: 2, cursor: 'pointer', display: 'flex', alignItems: 'center'}}>*/}
-                    {/*                    <PeopleIcon>*/}
-                    {/*                    </PeopleIcon>*/}
-                    {/*                    <Typography sx={{padding: '5px'}}>*/}
-                    {/*                        {menu.name}*/}
-                    {/*                    </Typography>*/}
-                    {/*                </Box>*/}
-                    {/*            </Link>*/}
-                    {/*        ))*/}
-                    {/*    }*/}
-                    {/*</div>*/}
                 </Box>
             </Drawer>
         </>
