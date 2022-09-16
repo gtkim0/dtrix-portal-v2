@@ -1,9 +1,10 @@
 import type { FC, ReactNode } from 'react';
 import SideLayout from "./side-layout";
 import TopLayout from "./top-layout";
-import {styled} from "@mui/material";
+import {createTheme, styled} from "@mui/material";
 import {Box} from "@mui/material";
 import {isRootSize} from "../../utils/is-root";
+import {headerSize} from "../../utils/is-root";
 
 interface LayoutProps {
     children ?:ReactNode;
@@ -12,13 +13,13 @@ interface LayoutProps {
 const RootLayout = styled('div')`
       display: flex;
       height: 100vh;
-      max-width: calc(100% - 240px);
-      left: 240px;
+      background:white;
+      max-width: calc(100% - ${isRootSize()}px);
+      left: ${isRootSize()}px;
       position: relative;
       max-height: 100%;
-      padding-top: 60px;
+      padding-top: ${headerSize()}px;
       flex: 1 1 auto;
-      padding-left: isRootSize();
 `;
 
 const Layout: FC<LayoutProps> = (props) => {

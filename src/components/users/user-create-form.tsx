@@ -21,13 +21,21 @@ import * as Yup from 'yup';
 import toast from 'react-hot-toast';
 import {siteInfo} from "../../types/site";
 
+interface IMenuType {
+    id:string,
+    value:string
+}
+
 interface IUserCreateFormProps {
     siteTotalList:siteInfo[];
+    menu: IMenuType[];
 }
+
+
 
 const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
 
-    const { siteTotalList } = props;
+    const { siteTotalList ,menu} = props;
     const router = useRouter();
     const formik = useFormik({
         initialValues: {
@@ -86,6 +94,8 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
     // const handleDeleteUser = useCallback(async ()=> {
     //     await userApi.deleteUser()
     // },[])
+
+    console.log(menu);
 
     // @ts-ignore
     return (
@@ -233,9 +243,15 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     },
                                 }}
                             >
-                                <MenuItem key="system" value="admin">시스템 관리자</MenuItem>
+
+                                {
+                                    menu.map((data)=> (
+                                        <MenuItem key={data.id} value={data.value}>{data.value}</MenuItem>
+                                    ))
+                                }
+                                {/* <MenuItem key="system" value="admin">시스템 관리자</MenuItem>
                                 <MenuItem key="admin" value="system">사이트 관리자</MenuItem>
-                                <MenuItem key="user" value="user">사용자</MenuItem>
+                                <MenuItem key="user" value="user">사용자</MenuItem> */}
                             </TextField>
                         </Grid>
                         <Grid

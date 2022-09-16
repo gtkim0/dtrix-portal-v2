@@ -43,6 +43,10 @@ class AuthApi {
         return instance.get<Result<User>, Result<User>>(`${path}/me`);
     }
 
+    async getToken({token}:any): Promise<Result<User>> {
+        return instance.post<Result<User>, Result<User>>(`${path}/token`);
+    }
+
 }
 
 export const authApi = new AuthApi();

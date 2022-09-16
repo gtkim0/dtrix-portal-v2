@@ -23,7 +23,7 @@ instance.interceptors.request.use(
         const token = window.localStorage.getItem('accessToken');
         if (token) {
             // @ts-ignore
-            config.headers.Authorization = `Bearer ${token}`;
+            config.headers.Authorization = `Bearer_${token}`;
         }
 
         return config;

@@ -43,11 +43,11 @@ const Home: NextPage = (props:any,context) => {
 // @ts-ignore
 Home.getLayout = (page) => (
     <>
-        {/*<AuthGuard>*/}
+        {/* <AuthGuard> */}
             <Layout>
                 {page}
             </Layout>
-        {/*</AuthGuard>*/}
+        {/* </AuthGuard> */}
     </>
 )
 

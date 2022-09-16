@@ -124,7 +124,7 @@ const Sites:NextPage = () => {
                 component="main"
                 sx={{
                     flexGrow:1,
-                    py:6,
+                    py:3,
                     px:3
                 }}
             >

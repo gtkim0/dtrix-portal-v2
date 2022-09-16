@@ -1,7 +1,11 @@
 import { styled } from '@mui/material/styles';
 import { TreeView, TreeItem, TreeItemProps, useTreeItem, TreeItemContentProps, treeItemClasses } from "@mui/lab";
 import {useRouter} from "next/router";
-import {Box, SvgIcon, SvgIconProps, Typography} from "@mui/material";
+import {Box, IconProps, SvgIcon, SvgIconProps, Typography} from "@mui/material";
+import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faPlus , faCircle } from '@fortawesome/free-solid-svg-icons';
+
+const faPlusIcon = faPlus as IconProps;
 
 const StyledTreeItemRoot:any = styled(TreeItem)(({ theme }) => ({
     color: theme.palette.text.secondary,
@@ -22,17 +26,19 @@ const StyledTreeItemRoot:any = styled(TreeItem)(({ theme }) => ({
             color: 'var(--tree-view-color)',
         },
         [`& .${treeItemClasses.label}`]: {
-            fontWeight: 'inherit',
-            color: 'inherit',
+            fontWeight: 'normal',
+            color: 'white',
+            fontSize:24
         },
     },
     [`& .${treeItemClasses.group}`]: {
-        marginLeft: 0,
+
         [`& .${treeItemClasses.content}`]: {
-            paddingLeft: theme.spacing(2),
+            paddingLeft: theme.spacing(3),
         },
     },
 }));
+
 
 export const StyledTreeItem = (props:any) => {
     const {bgColor,color,labelIcon:LabelIcon,labelInfo,labelText,onClick,node,...other} = props;
@@ -46,11 +52,6 @@ export const StyledTreeItem = (props:any) => {
         }
     }
 
-    const newPage = (e:any,node:any) => {
-        e.stopPropagation();
-        console.log(node);
-        router.push(`/${node.name}/new`);
-    }
     //node 정보 즉 메뉴 정보에 url ,id 값 다들어있어야지.
     // 그래야 + 버튼 누를때  url/new 를 하던가 , url/id 를 해서 조회할수있잖아
     return (
@@ -67,16 +68,9 @@ export const StyledTreeItem = (props:any) => {
                         // 아니면 파일 아이콘으로 만들자.
                     }
 
-                    <Typography onClick={(e)=>viewPage(e,node)} variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1 }}>
+                    <Typography onClick={(e)=>viewPage(e,node)} variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1, fontSize:'1rem' }}>
                         {labelText}
                     </Typography>
-                    {
-                        node.level > 2 ?
-                        "": 
-                        <Typography variant="caption" color="inherit" onClick={(e)=>newPage(e,node)} sx={{width:'30px'}}>
-                            +
-                        </Typography>
-                    }
                 </Box>
             }
             style={{

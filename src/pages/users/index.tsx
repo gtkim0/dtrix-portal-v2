@@ -126,6 +126,22 @@ const User: NextPage = () => {
         getUsers(params);
     }, [role, page, size, filters, sort])
 
+    const userLevel = 1;
+
+    const menu = userLevel=== 1 ? 
+    [
+        {id:'',value:"전체"},
+        {id:'system', value:'사이트 관리자'},
+        {id:'user', value:'사용자'}
+    ]
+     : 
+    [
+        {id:'',value:"전체"},
+        {id:'admin',value:'시스템 관리자'},
+        {id:'system',value:'사이트 관리자'},
+        {id:'user',value:'사용자'}
+    ]
+ 
     return (
         <>
             <Head>
@@ -135,7 +151,7 @@ const User: NextPage = () => {
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    py: 6,
+                    py: 3,
                     px: 3
                 }}
             >
@@ -242,10 +258,21 @@ const User: NextPage = () => {
                                 select
                                 SelectProps={{}}
                             >
+                                {
+                                    //TODO
+                                    // 로그인한 유저의 권한을 받아서
+                                    // 메뉴ITEM 을 동적으로 부여해야함.
+                                    menu.map(data=> (
+                                        <MenuItem key={data.id} value={data.id}>{data.value}</MenuItem>
+                                    ))
+                                }
+
+
                                 <MenuItem value="">전체</MenuItem>
                                 <MenuItem value="admin">시스템 관리자</MenuItem>
                                 <MenuItem value="system">사이트 관리자</MenuItem>
                                 <MenuItem value="user">사용자</MenuItem>
+                                
                             </TextField>
 
                             <TextField

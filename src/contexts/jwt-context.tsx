@@ -5,6 +5,8 @@ import type {User} from '../types/user';
 // import {initialize} from "next/client";
 import {authApi} from "../apis/auth-api";
 import {redirect} from "next/dist/server/api-utils";
+import useCookies from "react-cookie/cjs/useCookies";
+import axios from "axios";
 
 interface State {
     isInitialized: boolean;
@@ -95,7 +97,8 @@ export const AuthContext = createContext<AuthContextValue>({
 export const AuthProvider:FC<AuthProviderProps> = (props) => {
 
     const {children} = props;
-    const [state,dispatch] = useReducer(reducer,initialState)
+    const [state,dispatch] = useReducer(reducer,initialState);
+    const [cookies,setCookie,removeCookie] = useCookies(['id']);
 
     const login = async (username:string,password:string):Promise<void> => {
         const result:any = await authApi.login(username,password);
@@ -123,6 +126,25 @@ export const AuthProvider:FC<AuthProviderProps> = (props) => {
 
         const initialize = async ():Promise<void> => {
             try{
+                // cookies 에 id 가 있는지 먼저 확인하겠지.
+                const cooKietoken = cookies.id;
+                if(cooKietoken){
+   
+                    const result = await authApi.getToken(cooKietoken);
+                    const user = result?.data;
+                    dispatch({
+                        type:'INITIALIZE',
+                        payload: {
+                            isAuthenticated:true,
+                            user
+                        }
+                    })
+                    // 여기서 result 에서 user 정보가 넘어올거고.
+                    // TODO 여기 api 통신하는지 물어보기;
+                }else{
+
+                }
+                
                 const accessToken = window.localStorage.getItem('accessToken');
                 if(accessToken){
                     // todo (me 인증오류 임시 주석)

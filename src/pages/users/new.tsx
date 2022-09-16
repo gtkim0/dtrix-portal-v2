@@ -26,7 +26,23 @@ const UserCreate: NextPage = () => {
         getSiteTotalList();
     }, [])
 
+    //TODO 유저정보 API 받아오면 수정
+    const userLevel = 1;
+    const menu = userLevel=== 1 ? 
+    [
+        {id:'',value:"전체"},
+        {id:'system', value:'사이트 관리자'},
+        {id:'user', value:'사용자'}
+    ]
+     : 
+    [
+        {id:'',value:"전체"},
+        {id:'admin',value:'시스템 관리자'},
+        {id:'system',value:'사이트 관리자'},
+        {id:'user',value:'사용자'}
+    ]
 
+    console.log(menu);
     return (
         <>
             <Head>
@@ -43,7 +59,7 @@ const UserCreate: NextPage = () => {
                 }}
             >
                 <Container maxWidth="lg">
-                    <UserCreateForm siteTotalList={siteTotalList}/>
+                    <UserCreateForm siteTotalList={siteTotalList} menu={menu}/>
                 </Container>
             </Box>
         </>

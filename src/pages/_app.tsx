@@ -10,6 +10,7 @@ import {SettingsProvider} from "../contexts/settings-context";
 import {SettingsConsumer} from "../contexts/settings-context";
 import {AuthProvider} from "../contexts/jwt-context";
 import {AuthConsumer} from "../contexts/jwt-context";
+import { CookiesProvider } from 'react-cookie';
 
 type EnhancedAppProps = AppProps & {
     Component: NextPage;
@@ -31,12 +32,14 @@ const App: FC<EnhancedAppProps> = (props: any) => {
                             responsiveFontSizes: settings.responsiveFontSizes,
                             mode: settings.theme
                         })}>
-                            <AuthConsumer>
-                                {
-                                    (auth) =>
-                                        getLayout(<Component {...pageProps} />)
-                                }
-                            </AuthConsumer>
+                            <CookiesProvider>
+                                <AuthConsumer>
+                                    {
+                                        (auth) =>
+                                            getLayout(<Component {...pageProps} />)
+                                    }
+                                </AuthConsumer>
+                            </CookiesProvider>
                         </ThemeProvider>
                     )}
                 </SettingsConsumer>
