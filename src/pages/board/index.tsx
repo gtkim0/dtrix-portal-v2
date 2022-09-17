@@ -1,5 +1,5 @@
 import { NextPage } from 'next';
-import React, {useRef, useEffect, useCallback} from 'react';
+import React, {useRef, useEffect, useCallback, useState, MouseEvent} from 'react';
 import { Container, Box, Grid, Typography, Card,Button, Divider, TextField, InputAdornment } from '@mui/material'
 import Layout from '../../components/Layout/layout';
 import {Search as SearchIcon} from "../../icons/search";
@@ -9,9 +9,17 @@ import NextLink from "next/link";
 import {useTranslation} from "react-i18next";
 const Board:NextPage = () => {
 
-    const queryRef = useRef(null);
     const {t} = useTranslation();
+    const [total, setTotal] = useState<number>(0);
+    const [size, setSize] = useState<number>(10);
+    const [page, setPage] = useState<number>(0);
 
+    const [filters, setFilters] = useState<any>('');
+
+    const queryRef = useRef(null);
+
+
+    // @TODO 게시판 정보받아서 실데이터로 교체
     // const getBoardList = useCallback(async(params:any)=> {
     //     try {
     //         const result = await boardApi.getBoards(params);
@@ -20,9 +28,22 @@ const Board:NextPage = () => {
     //     }
     // },[])
 
+    const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
+        setPage(newPage);
+    };
+    const handleRowsPerPageChange = (event: React.ChangeEvent<HTMLInputElement>): void => {
+        setSize(parseInt(event.target.value, 10));
+    }
+
     useEffect(()=> {
         //게시글 api 호출
-    },[])
+        // TODO 페이징 기능 처리필요
+        // const params = {
+        //     page:page,
+        //     size:size
+        // }
+        // getBoardList(params);
+    },[page,size])
 
 
     const dummyData = [

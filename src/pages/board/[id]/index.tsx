@@ -86,10 +86,10 @@ const BoardDetail:NextPage<IBoardDetailProps> = () => {
     // board.title, board.content  이렇게 뽑을수있게하자.
 
     const viewer = (
-        <></>
-        // <Viewer
-        //    initialValue={"<table><thead><tr><th><p>1</p></th><th><p>2</p></th><th><p>3</p></th><th><p>4</p></th><th><p>5</p></th></tr></thead><tbody><tr><td><p>1</p></td><td><p>23</p></td><td><p>4</p></td><td><p>5</p></td><td><p>6</p></td></tr><tr><td><p>13</p></td><td><p>3</p></td><td><p>2</p></td><td><p>5</p></td><td><p>4</p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><p>Write</p><p>Preview</p><p><br></p><p>Markdown</p><p>WYSIWYG</p>"}
-        // />
+        // <></>
+        <Viewer
+           initialValue={"<table><thead><tr><th><p>1</p></th><th><p>2</p></th><th><p>3</p></th><th><p>4</p></th><th><p>5</p></th></tr></thead><tbody><tr><td><p>1</p></td><td><p>23</p></td><td><p>4</p></td><td><p>5</p></td><td><p>6</p></td></tr><tr><td><p>13</p></td><td><p>3</p></td><td><p>2</p></td><td><p>5</p></td><td><p>4</p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><p>Write</p><p>Preview</p><p><br></p><p>Markdown</p><p>WYSIWYG</p>"}
+        />
     )
 
     useEffect(()=> {

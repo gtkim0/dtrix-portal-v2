@@ -151,7 +151,7 @@ const User: NextPage = () => {
                 component="main"
                 sx={{
                     flexGrow: 1,
-                    py: 3,
+                    py: 2,
                     px: 3
                 }}
             >
@@ -163,7 +163,7 @@ const User: NextPage = () => {
                             spacing={3}
                         >
                             <Grid item>
-                                <Typography variant={"h4"}>
+                                <Typography variant={"h5"}>
                                     사용자 목록
                                 </Typography>
                             </Grid>
