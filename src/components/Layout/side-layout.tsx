@@ -38,7 +38,7 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                     open
                     PaperProps={{
                         sx: {
-                            backgroundColor: 'navy', // 1200 이상 sidebar
+                            backgroundColor: '#2e313d', // 1200 이상 sidebar
                             // backgroundColor: 'white', // 1200 이상 sidebar
 
                             borderRightWidth: (theme) => theme.palette.mode === 'dark' ? 1 : 0,
@@ -55,7 +55,7 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                             display: 'flex',
                             flexDirection: 'column',
                             height: '100%',
-                            padding:'20px 10px'
+                            padding:'20px 20px'
                         }}
                     >
                         <Menu menuData={data1} />

@@ -1,15 +1,16 @@
 import { NextPage } from 'next';
 import React, {useRef, useEffect, useCallback} from 'react';
-import { Container, Box, Grid, Typography, Card, Divider, TextField, InputAdornment } from '@mui/material'
+import { Container, Box, Grid, Typography, Card,Button, Divider, TextField, InputAdornment } from '@mui/material'
 import Layout from '../../components/Layout/layout';
 import {Search as SearchIcon} from "../../icons/search";
 import BoardListTable from '../../components/board/board-list-table';
 import { boardApi } from '../../apis/board-api';
-
+import NextLink from "next/link";
+import {useTranslation} from "react-i18next";
 const Board:NextPage = () => {
 
     const queryRef = useRef(null);
-
+    const {t} = useTranslation();
 
     // const getBoardList = useCallback(async(params:any)=> {
     //     try {
@@ -28,7 +29,7 @@ const Board:NextPage = () => {
         {
             bulletinId: 1,
             id: 'kkt',
-            title:'임시 게시물',
+            title:'임시 게시물1',
             content:'임시작성 ',
             reg_date:'2022-01-01',
             hits:999
@@ -36,7 +37,7 @@ const Board:NextPage = () => {
         {
             bulletinId: 2,
             id: 'kkt',
-            title:'임시 게시물',
+            title:'임시 게시물2',
             content:'임시작성 ',
             reg_date:'2022-01-01',
             hits:999
@@ -44,7 +45,7 @@ const Board:NextPage = () => {
         {
             bulletinId: 3,
             id: 'kkt',
-            title:'임시 게시물',
+            title:'임시 게시물3',
             content:'임시작성 ',
             reg_date:'2022-01-01',
             hits:999
@@ -52,17 +53,16 @@ const Board:NextPage = () => {
         {
             bulletinId: 4,
             id: 'kkt',
-            title:'임시 게시물',
+            title:'임시 게시물4',
             content:'임시작성 ',
             reg_date:'2022-01-01',
             hits:999
         },
     ]
 
-
     // 게시물 필터
-    const handleQueryChange = () => {
-
+    const handleQueryChange = (e:React.FormEvent<HTMLFormElement>) => {
+        e.preventDefault();
     }
 
     return (
@@ -72,20 +72,33 @@ const Board:NextPage = () => {
                 sx={{
                     flexGrow:1,
                     py:3,
-                    px:3
+                    px:1
                 }}
             >
                 <Container maxWidth="xl">
-                    <Box sx={{mb:4}}>
+                    <Box sx={{mb:2}}>
                         <Grid
                             container
                             justifyContent="space-between"
                             spacing={3}
                         >
                             <Grid item>
-                                <Typography variant={"h4"}>
+                                <Typography variant={"h5"}>
                                     게시글 목록
                                 </Typography>
+                            </Grid>
+                            <Grid item>
+                                <NextLink
+                                    href={"/board/new"}
+                                    passHref
+                                >
+                                        <Button
+                                            // startIcon={<PlusIcon fontSize="small"/>}
+                                            variant="contained"
+                                        >
+                                            {t('글쓰기')}
+                                        </Button>
+                                </NextLink>
                             </Grid>
                         </Grid>
                     </Box>

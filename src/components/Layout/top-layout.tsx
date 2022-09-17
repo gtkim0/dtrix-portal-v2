@@ -16,16 +16,16 @@ const TopLayout:FC<ITopLayoutProps> = () => {
                 sx={{
                     // padding:'0 20px',
                     width:'100%',
-                    background:'navy',
+                    background:'#2e313d',
                     height:`${headerSize()}px`,
                     display:"flex",
                     flexDirection:'row',
                     alignItems:'center',
                     justifyContent:'space-between',
-                    boxShadow:'0 3px 2px -2px blue'
+                    boxShadow:'0 3px 2px -2px white'
                 }}
             >
-                    <Box sx={{height:'100%',width:`${isRootSize()}px`,display:'flex',justifyContent:'center',alignItems:'center'}}>
+                    <Box sx={{background:'#2e313d', height:'100%',width:`${isRootSize()}px`,display:'flex',justifyContent:'center',alignItems:'center'}}>
                         <CoLogo />
                     </Box>
                     <UserInfoComponent />

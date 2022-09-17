@@ -124,7 +124,7 @@ const Sites:NextPage = () => {
                 component="main"
                 sx={{
                     flexGrow:1,
-                    py:3,
+                    py:2,
                     px:3
                 }}
             >
@@ -136,7 +136,7 @@ const Sites:NextPage = () => {
                             spacing={3}
                         >
                             <Grid item>
-                                <Typography variant={"h4"}>
+                                <Typography variant={"h5"}>
                                     사이트 목록
                                 </Typography>
                             </Grid>

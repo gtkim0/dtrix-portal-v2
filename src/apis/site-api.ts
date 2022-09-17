@@ -30,8 +30,8 @@ class SiteApi {
         return instance.get<Result<Site>, Result<Site>>(`${path}/${id}`);
     }
 
-    createSite(user: Site): Promise<Result<Site>> {
-        return instance.post<Result<Site>, Result<Site>>(path, user);
+    createSite(site: Site): Promise<Result<Site>> {
+        return instance.post<Result<Site>, Result<Site>>(path, site);
     }
 
     updateSite(site: Site): Promise<Result<Site>> {

@@ -20,7 +20,7 @@ const PageCreate: NextPage = () => {
                 component={"main"}
                 sx={{
                     flexGrow:1,
-                    py:6
+                    py:2
                 }}
             >
                 <Container maxWidth={"lg"}>

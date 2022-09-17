@@ -8,7 +8,7 @@ import {
     CardHeader, Checkbox,
     Divider,
     FormControlLabel, FormGroup,
-    Grid, Switch,
+    Grid, MenuItem, Switch, TextareaAutosize,
     TextField
 } from "@mui/material";
 import * as Yup from "yup";
@@ -68,7 +68,6 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
             >
                 <Card >
                     <CardHeader title="사이트 추가"/>
-                    <Divider/>
                     <CardContent >
                         <Grid
                             container
@@ -101,67 +100,54 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                     error={Boolean(formik.touched.siteDomain && formik.errors.siteDomain)}
                                     fullWidth
                                     helperText={formik.touched.siteDomain && formik.errors.siteDomain}
-                                    label="도메인"
+                                    label="관리자"
+                                    select
                                     name="siteDomain"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
                                     required
                                     value={formik.values.siteDomain}
+                                >
+                                    <MenuItem>테스트1</MenuItem>
+                                    <MenuItem>테스트2</MenuItem>
+                                    <MenuItem>테스트3</MenuItem>
+                                </TextField>
+                            </Grid>
+                            <Grid
+                                item
+                                md={12}
+                                xs={12}
+                            >
+                                <TextField
+                                   rows={5}
+                                   fullWidth
+                                   multiline
+                                   placeholder={"사이트 설명"}
                                 />
-                            </Grid>
 
+                            </Grid>
+                            {/*<Grid*/}
+                            {/*    item*/}
+                            {/*    md={6}*/}
+                            {/*    xs={12}*/}
+                            {/*>*/}
+                            {/*    <FormGroup>*/}
+                            {/*        <FormControlLabel control={<Checkbox name={"siteEnabled"} checked={formik.values.siteEnabled} onChange={formik.handleChange} />} label={"사이트허용"}/>*/}
+                            {/*    </FormGroup>*/}
+                            {/*</Grid>*/}
 
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
-                                <FormGroup>
-                                    <FormControlLabel control={<Checkbox name={"siteEnabled"} checked={formik.values.siteEnabled} onChange={formik.handleChange} />} label={"사이트허용"}/>
-                                </FormGroup>
-                            </Grid>
-
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
-                                <FormGroup>
-                                    <FormControlLabel control={<Checkbox name={"siteDefault"} checked={formik.values.siteDefault} onChange={formik.handleChange} />} label={"사이트허용"}/>
-                                </FormGroup>
-                            </Grid>
-
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
-                                <FormGroup>
-                                    <FormControlLabel control={<Switch checked={false} />} label="board" />
-                                </FormGroup>
-                            </Grid>
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
-                                <FormGroup>
-                                    <FormControlLabel control={<Switch checked={false} />} label="dashboard" />
-                                </FormGroup>
-                            </Grid>
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
-                                <FormGroup>
-                                    <FormControlLabel control={<Switch checked={false} />} label="elta" />
-                                </FormGroup>
-                            </Grid>
-
+                            {/*<Grid*/}
+                            {/*    item*/}
+                            {/*    md={6}*/}
+                            {/*    xs={12}*/}
+                            {/*>*/}
+                            {/*    <FormGroup>*/}
+                            {/*        <FormControlLabel control={<Checkbox name={"siteDefault"} checked={formik.values.siteDefault} onChange={formik.handleChange} />} label={"사이트허용"}/>*/}
+                            {/*    </FormGroup>*/}
+                            {/*</Grid>*/}
                         </Grid>
-                        <Divider sx={{my: 3}}/>
                     </CardContent>
+                    {/*<Divider sx={{my: 3}}/>*/}
                 </Card>
                 <Box
                     sx={{
