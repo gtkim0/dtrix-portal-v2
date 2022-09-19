@@ -126,9 +126,9 @@ const User: NextPage = () => {
         getUsers(params);
     }, [role, page, size, filters, sort])
 
-    const userLevel = 1;
+    let userLevel = '2';
 
-    const menu = userLevel=== 1 ? 
+    const menu = userLevel === '1' ?
     [
         {id:'',value:"전체"},
         {id:'system', value:'사이트 관리자'},
@@ -266,13 +266,10 @@ const User: NextPage = () => {
                                         <MenuItem key={data.id} value={data.id}>{data.value}</MenuItem>
                                     ))
                                 }
-
-
-                                <MenuItem value="">전체</MenuItem>
-                                <MenuItem value="admin">시스템 관리자</MenuItem>
-                                <MenuItem value="system">사이트 관리자</MenuItem>
-                                <MenuItem value="user">사용자</MenuItem>
-                                
+                                {/*<MenuItem value="">전체</MenuItem>*/}
+                                {/*<MenuItem value="admin">시스템 관리자</MenuItem>*/}
+                                {/*<MenuItem value="system">사이트 관리자</MenuItem>*/}
+                                {/*<MenuItem value="user">사용자</MenuItem>*/}
                             </TextField>
 
                             <TextField

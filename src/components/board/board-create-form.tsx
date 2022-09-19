@@ -18,18 +18,32 @@ import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css'
 import '@toast-ui/editor/dist/i18n/ko-kr';
-import {Editor, Viewer} from '@toast-ui/react-editor';
 import {useRouter} from "next/router";
+
+// import {Editor, Viewer} from '@toast-ui/react-editor';
+import dynamic from 'next/dynamic';
+import { boardApi } from '../../apis/board-api';
+
+const Editor = dynamic(()=> import('../../components/board/wrappedEditor'),{ssr:false});
+
+const EditorWithForwardedRef = React.forwardRef((props:any, ref) => {
+    return  (
+        <Editor {...props} forwardedRef={ref} />
+    )}
+);
+EditorWithForwardedRef.displayName="EditorWithForwardedRef";
 
 // const Editor = dynamic<EditorProps>(() => import('@toast-ui/react-editor').then(m => m.Editor), { ssr: false });
 
 const BoardCreateForm: FC<any> = (props) => {
 
     const router = useRouter();
-    const editorRef = useRef<Editor>(null);
+    const editorRef = useRef<any>(null);
     const [content, setContent] = useState({html: '', md: ''})
     const [anony, setAnony] = useState(false); // 익명여부
     const [popup, setPopup] = useState(false); // popup여부
+
+    const [title,setTitle] = useState<any>('');
 
     const options = ["영업부","자재부","생산부"];
 
@@ -49,13 +63,29 @@ const BoardCreateForm: FC<any> = (props) => {
     const handleSubmit = () => {
         const instance = editorRef.current?.getInstance();
 
-        console.log(instance?.getHTML());
+
+        // TODO 게시글 생성 API 테스트
+        // const params = {
+        //     title: title,
+        //     content: instance.getHTML();
+        // }
+
+        // const result = boardApi.createBoard(params);
+        // if(result ==true) {
+        //     router.push(`/board`)
+        // }
+
+
         if (instance) {
             setContent({
                 html: instance.getHTML(),
                 md: instance.getMarkdown()
             })
         }
+    }
+
+    const handleChangeTitle = (e:any) => {
+        setTitle(e.target.value);
     }
 
     // 익명여부
@@ -141,6 +171,8 @@ const BoardCreateForm: FC<any> = (props) => {
                     }}
                 >
                     <TextField
+                        value={title}
+                        onChange={handleChangeTitle}
                         label="게시글 제목"
                         variant='outlined'
                         fullWidth
@@ -148,21 +180,26 @@ const BoardCreateForm: FC<any> = (props) => {
                 </Box>
                 <Box>
                     {
-                        typeof window !== "undefined" && <Editor
+                        typeof window !== "undefined" && <EditorWithForwardedRef
+                            {...props}
                             ref={editorRef}
                             initialValue={""}
                             initialEditType={"wysiwyg"}
                             hideModeSwitch={true}
-                            events={{change: handleSubmit}}
-                            onChange={handleChange}
+                            // onChange={handleChange}
                             height={"700px"}
                             plugins={[colorSyntax]}
+                            events={{
+                                change:handleChange,
+
+                            }}
+
 
                             // hooks={{
-                                // 이미지 저장 할때 사용할 훅
-                                // addImageBlobHook: async (blob,callback)=> {
-                                //     const url = await
-                                // }
+                            // 이미지 저장 할때 사용할 훅
+                            // addImageBlobHook: async (blob,callback)=> {
+                            //     const url = await
+                            // }
                             // }}
                         />
                     }

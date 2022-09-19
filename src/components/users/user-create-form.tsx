@@ -34,44 +34,53 @@ interface IUserCreateFormProps {
 
 
 const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
-
+    const phoneRegExp = /^((\\+[1-9]{1,4}[ \\-]*)|(\\([0-9]{2,3}\\)[ \\-]*)|([0-9]{2,4})[ \\-]*)*?[0-9]{3,4}?[ \\-]*[0-9]{3,4}?$/
     const { siteTotalList ,menu} = props;
     const router = useRouter();
     const formik = useFormik({
         initialValues: {
-            userId: '',
+            userLoginId: '',
+            userPassword: '',
+            userPasswordConfirm:'',
             userName: '',
-            userPw: '',
-            userPwConfirm: '',
-            userRole:'',
+            userPhone: '',
+            userEmail:'',
             userSso: false,
-            siteName:'',
-            submit: null
+            positionName:'',
+            groupId:0,
+            roleId:0,
+            siteId:0
         },
         validationSchema: Yup.object({
-            userId: Yup
+            userLoginId: Yup
                 .string()
                 .min(5)
                 .max(255)
                 .required('아이디 is required'),
+            userPassword: Yup
+                .string()
+                .required('암호 is required'),
+
+            userPasswordConfirm: Yup
+                .string()
+                .required('암호 is required'),
 
             userName: Yup
                 .string()
-                .min(3)
-                .max(255)
-                .required('Name is required'),
+                .min(2)
+                .max(10)
+                .required('이름 is required'),
 
-            userPw: Yup
+            userPhone: Yup
+                .string().matches(phoneRegExp,'phone number is not valid')
+                .required("phone is required"),
+            userEmail : Yup
                 .string()
-                .required('암호 is required'),
-
-            userPwConfirm: Yup
+                .email()
+                .required('email is required'),
+            siteId : Yup
                 .string()
-                .required('암호 is required'),
-
-            userRole: Yup
-                .string()
-                .required('권한 is required')
+                .required("site is required")
         }),
         onSubmit: async (values, helpers): Promise<void> => {
             try {
@@ -85,7 +94,7 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                 console.error(err);
                 toast.error('Something went wrong!');
                 helpers.setStatus({success: false});
-                helpers.setErrors({submit: err.message});
+                // helpers.setErrors({submit: err.message});
                 helpers.setSubmitting(false);
             }
         }
@@ -95,8 +104,6 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
     //     await userApi.deleteUser()
     // },[])
 
-    console.log(menu);
-
     // @ts-ignore
     return (
         <>
@@ -105,7 +112,7 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                 {...props}
             >
                 <Card>
-                    <CardHeader title="사용자 정보"/>
+                    <CardHeader title="사용자 추가"/>
                     <Divider/>
                     <CardContent>
                         <Grid
@@ -118,20 +125,53 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                 xs={12}
                             >
                                 <TextField
-                                    error={Boolean(formik.touched.userId && formik.errors.userId)}
+                                    error={Boolean(formik.touched.userLoginId && formik.errors.userLoginId)}
                                     fullWidth
-                                    helperText={formik.touched.userId && formik.errors.userId}
+                                    helperText={formik.touched.userLoginId && formik.errors.userLoginId}
                                     label="아이디"
-                                    name="userId"
+                                    name="userLoginId"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
                                     required
-                                    value={formik.values.userId}
+                                    value={formik.values.userLoginId}
                                 />
-
-
                             </Grid>
-
+                            <Grid
+                                item
+                                md={6}
+                                xs={12}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.userPassword && formik.errors.userPassword)}
+                                    fullWidth
+                                    helperText={formik.touched.userPassword && formik.errors.userPassword}
+                                    label="패스워드"
+                                    name="userPassword"
+                                    onBlur={formik.handleBlur}
+                                    type="password"
+                                    onChange={formik.handleChange}
+                                    required
+                                    value={formik.values.userPassword}
+                                />
+                            </Grid>
+                            <Grid
+                                item
+                                md={6}
+                                xs={12}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.userPasswordConfirm && formik.errors.userPasswordConfirm)}
+                                    fullWidth
+                                    helperText={formik.touched.userPasswordConfirm && formik.errors.userPasswordConfirm}
+                                    label="패스워드 확인"
+                                    name="userPasswordConfirm"
+                                    type={"password"}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    required
+                                    value={formik.values.userPasswordConfirm}
+                                />
+                            </Grid>
                             <Grid
                                 item
                                 md={6}
@@ -141,7 +181,7 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     error={Boolean(formik.touched.userName && formik.errors.userName)}
                                     fullWidth
                                     helperText={formik.touched.userName && formik.errors.userName}
-                                    label="사용자명"
+                                    label="이름"
                                     name="userName"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
@@ -149,6 +189,76 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     value={formik.values.userName}
                                 />
                             </Grid>
+                            <Grid
+                                item
+                                md={6}
+                                xs={12}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.userPhone && formik.errors.userPhone)}
+                                    fullWidth
+                                    helperText={formik.touched.userPhone && formik.errors.userPhone}
+                                    label="연락처"
+                                    name="userPhone"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    required
+                                    value={formik.values.userPhone}
+                                />
+                            </Grid>
+                            <Grid
+                                item
+                                md={6}
+                                xs={12}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.userEmail && formik.errors.userEmail)}
+                                    fullWidth
+                                    helperText={formik.touched.userEmail && formik.errors.userEmail}
+                                    label="이메일"
+                                    name="userEmail"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    required
+                                    value={formik.values.userEmail}
+                                />
+                            </Grid>
+                            <Grid
+                                item
+                                md={6}
+                                xs={12}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.positionName && formik.errors.positionName)}
+                                    fullWidth
+                                    helperText={formik.touched.positionName && formik.errors.positionName}
+                                    label="직책명"
+                                    name="positionName"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    required
+                                    value={formik.values.positionName}
+                                />
+                            </Grid>
+
+
+                            {/*<Grid*/}
+                            {/*    item*/}
+                            {/*    md={6}*/}
+                            {/*    xs={12}*/}
+                            {/*>*/}
+                            {/*    <TextField*/}
+                            {/*        error={Boolean(formik.touched.userName && formik.errors.userName)}*/}
+                            {/*        fullWidth*/}
+                            {/*        helperText={formik.touched.userName && formik.errors.userName}*/}
+                            {/*        label="사용자명"*/}
+                            {/*        name="userName"*/}
+                            {/*        onBlur={formik.handleBlur}*/}
+                            {/*        onChange={formik.handleChange}*/}
+                            {/*        required*/}
+                            {/*        value={formik.values.userName}*/}
+                            {/*    />*/}
+                            {/*</Grid>*/}
 
                             <Grid
                                 item
@@ -160,10 +270,10 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     label="사이트명"
                                     fullWidth
                                     required
-                                    name={"siteName"}
+                                    name={"siteId"}
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    value={formik.values.siteName}
+                                    value={formik.values.siteId}
                                     SelectProps={{
                                         MenuProps:{
                                             PaperProps:{
@@ -180,26 +290,6 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                         ))
                                     }
                                 </TextField>
-
-                            </Grid>
-
-
-                            <Grid
-                                item
-                                md={6}
-                                xs={12}
-                            >
-                                <TextField
-                                    error={Boolean(formik.touched.userPw && formik.errors.userPw)}
-                                    fullWidth
-                                    type="password"
-                                    helperText={formik.touched.userPw && formik.errors.userPw}
-                                    label="암호"
-                                    name="userPw"
-                                    onBlur={formik.handleBlur}
-                                    onChange={formik.handleChange}
-                                    value={formik.values.userPw}
-                                />
                             </Grid>
                             <Grid
                                 item
@@ -207,80 +297,86 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                 xs={12}
                             >
                                 <TextField
-                                    error={Boolean(formik.touched.userPwConfirm && formik.errors.userPwConfirm)}
+                                    select
                                     fullWidth
-                                    type="password"
-                                    helperText={formik.touched.userPwConfirm && formik.errors.userPwConfirm}
-                                    label="암호 확인"
-                                    name="userPwConfirm"
+                                    label={"그룹"}
+                                    name="groupId"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    value={formik.values.userPwConfirm}
-                                />
+                                    value={formik.values.groupId}
+                                    SelectProps={{
+                                        MenuProps: {
+                                            PaperProps: {
+                                                style: {maxHeight: 400}
+                                            }
+                                        },
+                                    }}
+                                >
+                                    {/*groupId*/}
+                                    {/* <MenuItem key="system" value="admin">시스템 관리자</MenuItem>
+                                    <MenuItem key="admin" value="system">사이트 관리자</MenuItem>
+                                    <MenuItem key="user" value="user">사용자</MenuItem> */}
+                                </TextField>
                             </Grid>
-                        </Grid>
-
-                        <Grid
-                            item
-                            md={6}
-                            xs={12}
-
-                        >
-                            <TextField
-                                select
-                                fullWidth
-                                label={"사용자 권한"}
-                                name="userRole"
-                                onBlur={formik.handleBlur}
-                                onChange={formik.handleChange}
-                                value={formik.values.userRole}
-                                sx={{mt:2}}
-                                SelectProps={{
-                                    MenuProps: {
-                                        PaperProps: {
-                                            style: {maxHeight: 400}
-                                        }
-                                    },
-                                }}
+                            <Grid
+                                item
+                                md={6}
+                                xs={12}
                             >
-
-                                {
-                                    menu.map((data)=> (
-                                        <MenuItem key={data.id} value={data.value}>{data.value}</MenuItem>
-                                    ))
-                                }
-                                {/* <MenuItem key="system" value="admin">시스템 관리자</MenuItem>
-                                <MenuItem key="admin" value="system">사이트 관리자</MenuItem>
-                                <MenuItem key="user" value="user">사용자</MenuItem> */}
-                            </TextField>
-                        </Grid>
-                        <Grid
-                            item
-                            md={6}
-                            xs={12}
-                        >
-                            <TextField
-                                select
-                                fullWidth
-                                label={"sso"}
-                                name="userSso"
-                                onBlur={formik.handleBlur}
-                                onChange={formik.handleChange}
-                                sx={{mt:2}}
-                                value={formik.values.userSso}
-                                SelectProps={{
-                                    MenuProps: {
-                                        PaperProps: {
-                                            style: {maxHeight: 400}
-                                        }
-                                    },
-                                }}
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label={"사용자 권한"}
+                                    name="roleId"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    value={formik.values.roleId}
+                                    SelectProps={{
+                                        MenuProps: {
+                                            PaperProps: {
+                                                style: {maxHeight: 400}
+                                            }
+                                        },
+                                    }}
+                                >
+                                    {
+                                        menu.map((data)=> (
+                                            <MenuItem key={data.id} value={data.value}>{data.value}</MenuItem>
+                                        ))
+                                    }
+                                    {/* <MenuItem key="system" value="admin">시스템 관리자</MenuItem>
+                                        <MenuItem key="admin" value="system">사이트 관리자</MenuItem>
+                                        <MenuItem key="user" value="user">사용자</MenuItem> */}
+                                </TextField>
+                            </Grid>
+                            <Grid
+                                item
+                                md={6}
+                                xs={12}
                             >
-                                <MenuItem key="true" value={true as any}>Y</MenuItem>
-                                <MenuItem key="false" value={false as any}>N</MenuItem>
-                            </TextField>
+                                <TextField
+                                    select
+                                    fullWidth
+                                    label={"sso"}
+                                    name="userSso"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    value={formik.values.userSso}
+                                    SelectProps={{
+                                        MenuProps: {
+                                            PaperProps: {
+                                                style: {maxHeight: 400}
+                                            }
+                                        },
+                                    }}
+                                >
+                                    <MenuItem key="true" value={true as any}>Y</MenuItem>
+                                    <MenuItem key="false" value={false as any}>N</MenuItem>
+                                </TextField>
+                            </Grid>
+
                         </Grid>
-                        <Divider sx={{my: 3}}/>
+
                     </CardContent>
                 </Card>
                 <Box

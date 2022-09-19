@@ -3,8 +3,12 @@ import Layout from "../../../components/Layout/layout";
 import { NextPage } from "next";
 import {useRouter} from "next/router";
 import {Box, Chip, Container, Typography} from "@mui/material";
-import BoardEditForm from '../../../components/board/board-edit-form';
+
 import {boardApi} from "../../../apis/board-api";
+import dynamic from 'next/dynamic';
+
+// import BoardEditForm from '../../../components/board/board-edit-form';
+const BoardEditForm = dynamic(()=> import('../../../components/board/board-edit-form'),{ssr:false});
 
 const EditBoard:NextPage = () => {
     const router = useRouter();

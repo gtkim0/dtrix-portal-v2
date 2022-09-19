@@ -2,8 +2,12 @@ import React from 'react';
 import {NextPage} from 'next';
 import {Box,Container} from '@mui/material';
 import Layout from '../../components/Layout/layout';
-import BoardCreateForm from '../../components/board/board-create-form';
 
+import dynamic from 'next/dynamic';
+
+// toast-ui-editor 는 ssr 지원안함.  dynamic import 사용
+// import BoardCreateForm from '../../components/board/board-create-form';
+const BoardCreateForm = dynamic(()=>import('../../components/board/board-create-form'),{ssr:false})
 
 const BoardCreate: NextPage = () => {
 

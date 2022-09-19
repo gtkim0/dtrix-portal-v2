@@ -7,14 +7,21 @@ import BoardListTable from '../../components/board/board-list-table';
 import { boardApi } from '../../apis/board-api';
 import NextLink from "next/link";
 import {useTranslation} from "react-i18next";
+
+interface Filters {
+    title?: string;
+}
+
+
 const Board:NextPage = () => {
 
     const {t} = useTranslation();
+
     const [total, setTotal] = useState<number>(0);
     const [size, setSize] = useState<number>(10);
     const [page, setPage] = useState<number>(0);
 
-    const [filters, setFilters] = useState<any>('');
+
 
     const queryRef = useRef(null);
 
@@ -27,6 +34,10 @@ const Board:NextPage = () => {
     //         console.error(err);
     //     }
     // },[])
+
+    const [filters, setFilters] = useState<Filters>({
+        title:''
+    });
 
     const handlePageChange = (event: MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
         setPage(newPage);
@@ -43,7 +54,7 @@ const Board:NextPage = () => {
         //     size:size
         // }
         // getBoardList(params);
-    },[page,size])
+    },[page,size,filters])
 
 
     const dummyData = [
@@ -113,12 +124,12 @@ const Board:NextPage = () => {
                                     href={"/board/new"}
                                     passHref
                                 >
-                                        <Button
-                                            // startIcon={<PlusIcon fontSize="small"/>}
-                                            variant="contained"
-                                        >
-                                            {t('글쓰기')}
-                                        </Button>
+                                    <Button
+                                        // startIcon={<PlusIcon fontSize="small"/>}
+                                        variant="contained"
+                                    >
+                                        {t('글쓰기')}
+                                    </Button>
                                 </NextLink>
                             </Grid>
                         </Grid>
@@ -168,6 +179,11 @@ const Board:NextPage = () => {
                         </Box>
                         <BoardListTable
                             board={dummyData}
+                            total={total}
+                            size={size}
+                            page={page}
+                            onRowsPerPageChange={handleRowsPerPageChange}
+                            onPageChange={handlePageChange}
                         />
                     </Card>
                 </Container>

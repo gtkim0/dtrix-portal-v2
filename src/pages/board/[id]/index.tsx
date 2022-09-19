@@ -18,23 +18,28 @@ import {
     Button,
     IconButton
 } from "@mui/material";
-import {Viewer} from "@toast-ui/react-editor";
-import '@toast-ui/editor/dist/toastui-editor.css'
+// import {Viewer} from "@toast-ui/react-editor";
+// import '@toast-ui/editor/dist/toastui-editor.css'
 
 import BoardCommentAdd from "../../../components/board/comment/commentAdd";
 import {boardCommentApi} from "../../../apis/boardComment-api";
 import DeleteIcon from '@mui/icons-material/Delete';
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
-import dynamic from "next/dynamic";
+// import dynamic from "next/dynamic";
+// const Viewer = dynamic(()=> import('@toast-ui/react-editor'),{ssr:false});
+// import TuiEditorViewer from "../../../components/board/TuiEditorViewer";
 
+const TuiEditorViewer = dynamic(()=>import('../../../components/board/TuiEditorViewer'),{ssr:false})
 
 interface IBoardDetailProps {
 
 }
 import BoardComment from "../../../components/board/comment";
+import dynamic from "next/dynamic";
 // const BoardComment = dynamic(()=> import("../../../components/board/comment/commentAdd"),{
 //     ssr:false
 // })
+
 
 const BoardDetail:NextPage<IBoardDetailProps> = () => {
 
@@ -85,12 +90,14 @@ const BoardDetail:NextPage<IBoardDetailProps> = () => {
     // board 에 title 이랑 content 내용이 들어올테니까 그걸받아서 뿌린다.
     // board.title, board.content  이렇게 뽑을수있게하자.
 
-    const viewer = (
-        // <></>
-        <Viewer
-           initialValue={"<table><thead><tr><th><p>1</p></th><th><p>2</p></th><th><p>3</p></th><th><p>4</p></th><th><p>5</p></th></tr></thead><tbody><tr><td><p>1</p></td><td><p>23</p></td><td><p>4</p></td><td><p>5</p></td><td><p>6</p></td></tr><tr><td><p>13</p></td><td><p>3</p></td><td><p>2</p></td><td><p>5</p></td><td><p>4</p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><p>Write</p><p>Preview</p><p><br></p><p>Markdown</p><p>WYSIWYG</p>"}
-        />
-    )
+    // const viewer = (
+    //     // <></>
+    //     <Viewer
+    //         initialValue={"<table><thead><tr><th><p>1</p></th><th><p>2</p></th><th><p>3</p></th><th><p>4</p></th><th><p>5</p></th></tr></thead><tbody><tr><td><p>1</p></td><td><p>23</p></td><td><p>4</p></td><td><p>5</p></td><td><p>6</p></td></tr><tr><td><p>13</p></td><td><p>3</p></td><td><p>2</p></td><td><p>5</p></td><td><p>4</p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><p>Write</p><p>Preview</p><p><br></p><p>Markdown</p><p>WYSIWYG</p>"}
+    //     />
+    // )
+
+    const dummyContent = "<table><thead><tr><th><p>1</p></th><th><p>2</p></th><th><p>3</p></th><th><p>4</p></th><th><p>5</p></th></tr></thead><tbody><tr><td><p>1</p></td><td><p>23</p></td><td><p>4</p></td><td><p>5</p></td><td><p>6</p></td></tr><tr><td><p>13</p></td><td><p>3</p></td><td><p>2</p></td><td><p>5</p></td><td><p>4</p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr><tr><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td><td><p><br></p></td></tr></tbody></table><p>Write</p><p>Preview</p><p><br></p><p>Markdown</p><p>WYSIWYG</p>"
 
     useEffect(()=> {
         getBoardInfo();
@@ -118,7 +125,7 @@ const BoardDetail:NextPage<IBoardDetailProps> = () => {
             createId:"김규태3",
         }
     ]
-    
+
     //TODO 실데이터로 채워서 적용해야하고, 유저정보받아와서 삭제할때 조건 걸기
 
     // if(!board) {
@@ -149,7 +156,8 @@ const BoardDetail:NextPage<IBoardDetailProps> = () => {
                             </IconButton>
                             <CardHeader title={`제목: ${dummyTitle}`} />
                             <CardContent>
-                                {viewer}
+                                {/*{viewer}*/}
+                                <TuiEditorViewer content={dummyContent} />
                             </CardContent>
                         </Card>
                     </Box>

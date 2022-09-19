@@ -10,6 +10,6 @@ export default (props: TuiEditorWithForwardedProps) => {
     console.log(props);
     return (
         <Editor {...props} ref={props.forwardedRef}/>
-        )
+    )
 
 };

@@ -1,5 +1,5 @@
 import React from 'react';
-import type {FC} from 'react';
+import type {FC, ChangeEvent} from 'react';
 import {
     Table,
     TableHead,
@@ -8,6 +8,7 @@ import {
     TableBody,
     Link,
     IconButton,
+    TablePagination
 } from '@mui/material';
 import {createStyles, makeStyles} from "@mui/styles";
 import NextLink from "next/link";
@@ -18,6 +19,11 @@ import {useAuth} from "../../hooks/use-auth";
 
 interface IBoardListTableProps {
     board:any;
+    total:number;
+    size:number;
+    page:number;
+    onPageChange: any;
+    onRowsPerPageChange?: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 // @ts-ignore
@@ -36,7 +42,7 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
     const classes = useStyles();
     const user = useAuth();
 
-    const { board } = props;
+    const { board,total,size,page, onPageChange,onRowsPerPageChange } = props;
     if(!board){
         return null;
     }
@@ -44,7 +50,7 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
     const getSelectWindow = (board:any) => {
         if(false){
             return (
-                // TODO 팝업인지 새창인지 모르겠네.
+                // TODO 팝업인지 새창인지 모르겠네.  -> modal 창으로 수정
                 <Link onClick={()=>window.open(`/board/${board.bulletinId}`)}>
                     <Typography sx={{cursor:'pointer'}}>
                         {board.bulletinId}
@@ -148,27 +154,45 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
                                 {/*        ""*/}
                                 {/*}*/}
 
-                                    <NextLink
-                                        href={`/board/${board.bulletinId}/edit`}
-                                        passHref
-                                    >
-                                        <IconButton component="a">
-                                            <PencilAltIcon fontSize="small"/>
-                                        </IconButton>
-                                    </NextLink>
-                                    <NextLink
-                                        href={`/board/${board.bulletinId}`}
-                                        passHref
-                                    >
-                                        <IconButton component="a">
-                                            <ArrowRightIcon fontSize="small"/>
-                                        </IconButton>
-                                    </NextLink>
-                                </TableCell>
+                                <NextLink
+                                    href={`/board/${board.bulletinId}/edit`}
+                                    passHref
+                                >
+                                    <IconButton component="a">
+                                        <PencilAltIcon fontSize="small"/>
+                                    </IconButton>
+                                </NextLink>
+                                <NextLink
+                                    href={`/board/${board.bulletinId}`}
+                                    passHref
+                                >
+                                    <IconButton component="a">
+                                        <ArrowRightIcon fontSize="small"/>
+                                    </IconButton>
+                                </NextLink>
+                            </TableCell>
                         </TableRow>
                     ))}
                 </TableBody>
             </Table>
+            <TablePagination
+                component="div"
+                count={total}
+                onPageChange={onPageChange}
+                onRowsPerPageChange={onRowsPerPageChange}
+                page={page}
+                rowsPerPage={size}
+                rowsPerPageOptions={[10,20,50]}
+                sx={(theme) => ({
+                    ".MuiTablePagination-toolbar": {
+                        height: 56,
+                    },
+                    ".MuiTablePagination-selectLabel": {
+                        color: theme.palette.text.secondary,
+                        lineHeight: 1.66,
+                    },
+                })}
+            />
         </>
     )
 }

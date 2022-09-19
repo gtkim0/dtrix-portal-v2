@@ -1,6 +1,7 @@
-import React from 'react';
+import React, {useState} from 'react';
 import type {FC} from 'react';
 import {
+    Autocomplete,
     Box,
     Button,
     Card,
@@ -9,7 +10,7 @@ import {
     Divider,
     FormControlLabel, FormGroup,
     Grid, MenuItem, Switch, TextareaAutosize,
-    TextField
+    TextField, Typography
 } from "@mui/material";
 import * as Yup from "yup";
 import toast from "react-hot-toast";
@@ -23,8 +24,11 @@ interface ISiteCreateFormProps {
 }
 
 const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
-
+    const userList = ["test1","user1","serach1"]
     const router = useRouter();
+    const [admin,setAdmin] = useState<string | null>()
+    const [dbValue,setDbValue] = useState<any>('postgre');
+
     const formik = useFormik({
         initialValues: {
             siteName: '',
@@ -60,18 +64,24 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
         }
     });
 
+    const handleSetDb = (e:any) => {
+
+    }
+
+
     return (
         <>
             <form
                 onSubmit={formik.handleSubmit}
                 {...props}
             >
+                {/*<Typography variant={"h3"}>사이트 추가</Typography>*/}
                 <Card >
                     <CardHeader title="사이트 추가"/>
                     <CardContent >
                         <Grid
                             container
-                            spacing={3}
+                            spacing={2}
                         >
                             <Grid
                                 item
@@ -96,6 +106,22 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 md={6}
                                 xs={12}
                             >
+                                {/*TODO 유저리스트 받아와서 목록에 보여줘야함.*/}
+                                {/*<Autocomplete*/}
+                                {/*    value={userList}*/}
+                                {/*    onChange={(e:any,newValue:string | null)=> {*/}
+                                {/*        setGroup(newValue)*/}
+                                {/*    }}*/}
+                                {/*    options={options}*/}
+                                {/*    onInputChange={(e,newInputValue)=> {*/}
+                                {/*        setInputValue(newInputValue);*/}
+                                {/*    }}*/}
+                                {/*    inputValue={inputValue}*/}
+                                {/*    sx={{width:'20%',display:'flex',justifyContent:'center',alignItems:'center'}}*/}
+                                {/*    renderInput={(params)=>*/}
+                                {/*        <TextField {...params} label={"그룹"} />*/}
+                                {/*    }*/}
+                                {/*/>*/}
                                 <TextField
                                     error={Boolean(formik.touched.siteDomain && formik.errors.siteDomain)}
                                     fullWidth
@@ -108,9 +134,9 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                     required
                                     value={formik.values.siteDomain}
                                 >
-                                    <MenuItem>테스트1</MenuItem>
-                                    <MenuItem>테스트2</MenuItem>
-                                    <MenuItem>테스트3</MenuItem>
+                                    <MenuItem>유저1</MenuItem>
+                                    <MenuItem>유저2</MenuItem>
+                                    <MenuItem>유저3</MenuItem>
                                 </TextField>
                             </Grid>
                             <Grid
@@ -147,7 +173,109 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                             {/*</Grid>*/}
                         </Grid>
                     </CardContent>
-                    {/*<Divider sx={{my: 3}}/>*/}
+                </Card>
+                <Divider />
+                <Card>
+                    <CardHeader title="서비스 정보"/>
+                    <CardContent>
+                        <Grid>
+                            <Grid>
+                                {/*TODO 여기는 추후에 데이터불러와서 동적으로 변하게처리해야함*/}
+
+                                {/*{*/}
+                                {/*    data.map((data)=> (*/}
+                                {/*        <FormControlLabel control={<Switch />} label={} />*/}
+                                {/*    ))*/}
+                                {/*}*/}
+
+
+                                <FormControlLabel
+                                    control={<Switch />} label={"보드"}
+                                />
+                                <FormControlLabel
+                                    control={<Switch />} label={"대시보드"}
+                                />
+                            </Grid>
+                        </Grid>
+                    </CardContent>
+                </Card>
+                <Divider />
+                <Card>
+                    <CardHeader title={"db"} />
+                    <CardContent>
+                        <Grid
+                            container
+                            spacing={2}
+                        >
+                            <Grid
+                                item
+                                xs={12}
+                                md={6}
+                            >
+                                <TextField
+                                    fullWidth
+                                    select
+                                    value={dbValue}
+                                    onChange={handleSetDb}
+                                    >
+                                    <MenuItem key={"postgre"} value={"postgre"}>PostgreSQL</MenuItem>
+                                    <MenuItem key={"maria"} value={"maria"}>Maria</MenuItem>
+                                    <MenuItem key={"oracle"} value={"oracle"}>Oracle</MenuItem>
+                                </TextField>
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                md={6}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.siteName && formik.errors.siteName)}
+                                    fullWidth
+                                    helperText={formik.touched.siteName && formik.errors.siteName}
+                                    label="ip:port"
+                                    name="siteName"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    required
+                                    value={formik.values.siteName}
+                                />
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                md={6}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.siteName && formik.errors.siteName)}
+                                    fullWidth
+                                    helperText={formik.touched.siteName && formik.errors.siteName}
+                                    label="id"
+                                    name="siteName"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    required
+                                    value={formik.values.siteName}
+                                />
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                md={6}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.siteName && formik.errors.siteName)}
+                                    fullWidth
+                                    helperText={formik.touched.siteName && formik.errors.siteName}
+                                    label="password"
+                                    name="siteName"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    required
+                                    value={formik.values.siteName}
+                                />
+                            </Grid>
+                        </Grid>
+                    </CardContent>
                 </Card>
                 <Box
                     sx={{
