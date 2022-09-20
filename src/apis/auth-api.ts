@@ -6,8 +6,9 @@ const path = '/auth';
 
 class AuthApi {
 
-    async login(userId:string, userPw:string): Promise<string> {
-        const result:any = await instance.post<Result<string>, Result<string>>(`${path}/login`, {userId, userPw});
+    async login(userLoginId:string, userPassword:string): Promise<string> {
+        const result:any = await instance.post<Result<string>, Result<string>>(`${path}/system/login`, {userLoginId, userPassword});
+        console.log(result);
         const {code,data,message}:any = result;
         const {token, domain} = data;
 

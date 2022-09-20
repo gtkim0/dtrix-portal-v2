@@ -23,6 +23,7 @@ import type {ChangeEvent, MouseEvent} from "react";
 import Layout from "../../components/Layout/layout";
 import axios from "axios";
 import {userApi} from "../../apis/user-api";
+import { useAuth } from "../../hooks/use-auth";
 
 type Sort =
     | 'createDate|desc'
@@ -59,6 +60,10 @@ interface Filters {
 }
 
 const User: NextPage = () => {
+    const userInfo = useAuth();
+    console.log(userInfo);
+    // const {userInfo} = userRoleInfo;
+    
 
     const {t} = useTranslation();
     const [users, setUsers] = useState<User[]>([]);
@@ -126,8 +131,13 @@ const User: NextPage = () => {
         getUsers(params);
     }, [role, page, size, filters, sort])
 
+    
+
     let userLevel = '2';
 
+
+    // console.log(userRoleInfo);
+    // TODO 로그인 USER 정보 가져오서 userrole 에 따른 메뉴처리
     const menu = userLevel === '1' ?
     [
         {id:'',value:"전체"},

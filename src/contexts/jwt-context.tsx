@@ -102,7 +102,7 @@ export const AuthProvider:FC<AuthProviderProps> = (props) => {
 
     const login = async (username:string,password:string):Promise<void> => {
         const result:any = await authApi.login(username,password);
-        // console.log("result",result);
+        console.log("result",result);
         const token = result.token;
         const domain = result.domain;
         localStorage.setItem('accessToken',token);
@@ -127,23 +127,24 @@ export const AuthProvider:FC<AuthProviderProps> = (props) => {
         const initialize = async ():Promise<void> => {
             try{
                 // cookies 에 id 가 있는지 먼저 확인하겠지.
-                const cooKietoken = cookies.id;
-                if(cooKietoken){
-   
-                    const result = await authApi.getToken(cooKietoken);
-                    const user = result?.data;
-                    dispatch({
-                        type:'INITIALIZE',
-                        payload: {
-                            isAuthenticated:true,
-                            user
-                        }
-                    })
-                    // 여기서 result 에서 user 정보가 넘어올거고.
-                    // TODO 여기 api 통신하는지 물어보기;
-                }else{
 
-                }
+                // const cooKietoken = cookies.id;
+                // if(cooKietoken){
+   
+                //     const result = await authApi.getToken(cooKietoken);
+                //     const user = result?.data;
+                //     dispatch({
+                //         type:'INITIALIZE',
+                //         payload: {
+                //             isAuthenticated:true,
+                //             user
+                //         }
+                //     })
+                //     // 여기서 result 에서 user 정보가 넘어올거고.
+                //     // TODO 여기 api 통신하는지 물어보기;
+                // }else{
+
+                // }
                 
                 const accessToken = window.localStorage.getItem('accessToken');
                 if(accessToken){

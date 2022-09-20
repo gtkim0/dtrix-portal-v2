@@ -101,7 +101,7 @@ const SiteListTable:FC<ISiteListTable> = (props) => {
                                 </TableCell>
                                 <TableCell>
                                     <Typography sx={{margin:'0 auto'}}>
-                                        {dateFormat(site.createAt)}
+                                        {/* {dateFormat(site.createAt)} */}
                                     </Typography>
                                 </TableCell>
                                 <TableCell align={"right"}>

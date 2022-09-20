@@ -27,13 +27,14 @@ const Board:NextPage = () => {
 
 
     // @TODO 게시판 정보받아서 실데이터로 교체
-    // const getBoardList = useCallback(async(params:any)=> {
-    //     try {
-    //         const result = await boardApi.getBoards(params);
-    //     }catch(err){
-    //         console.error(err);
-    //     }
-    // },[])
+    const getBoardList = useCallback(async(params:any)=> {
+        try {
+            const result = await boardApi.getBoards(params);
+            console.log(result);
+        }catch(err){
+            console.error(err);
+        }
+    },[])
 
     const [filters, setFilters] = useState<Filters>({
         title:''
@@ -47,7 +48,7 @@ const Board:NextPage = () => {
     }
 
     useEffect(()=> {
-        //게시글 api 호출
+        // 게시글 api 호출
         // TODO 페이징 기능 처리필요
         // const params = {
         //     page:page,

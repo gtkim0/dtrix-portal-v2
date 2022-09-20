@@ -21,14 +21,19 @@ export interface User extends UserBase {
     userId:number;
     avatar:string;
     userLoginId : string;
-    userPassword: string;
+    // userPassword: string;
     userName:string;
     userPhone:string;
     userEmail:string;
-    userSso:false;
+    userSso:boolean;
     positionName:string;
     groupId:number;
     roleId:number;
+    roleName:string;
     siteId:number;
+    siteName:string;
     createAt:string;
+    delYn:boolean;
+    createdAt:number;
+    modifiedAt:number;
 }

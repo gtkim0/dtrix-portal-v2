@@ -9,7 +9,7 @@ class BoardApi {
 
     // 게시물 전체 리스트 api
     getBoards(params?:any) :Promise<any> {
-        return instance.get<Result<any>,Result<any>>(path,{params});
+        return instance.get<Result<any>,Result<any>>(`${path}/page`,{params});
     }
 
     // 게시물 검색 서치 api

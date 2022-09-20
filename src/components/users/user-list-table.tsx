@@ -103,12 +103,12 @@ const UserListTable:FC<IUserListTableProps> = (props) => {
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="body2">
-                                            {user.groupId}
+                                            {user.siteName}
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="body2">
-                                            {user.roleId}
+                                            {user.roleName}
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
@@ -118,7 +118,7 @@ const UserListTable:FC<IUserListTableProps> = (props) => {
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="body2">
-                                            {dateFormat(user.createAt)}
+                                            {dateFormat(user.createdAt)}
                                         </Typography>
                                     </TableCell>
 
