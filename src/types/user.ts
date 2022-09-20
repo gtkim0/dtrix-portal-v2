@@ -18,6 +18,8 @@ export interface UserBase {
 // }
 
 export interface User extends UserBase {
+    userId:number;
+    avatar:string;
     userLoginId : string;
     userPassword: string;
     userName:string;
@@ -28,4 +30,5 @@ export interface User extends UserBase {
     groupId:number;
     roleId:number;
     siteId:number;
+    createAt:string;
 }

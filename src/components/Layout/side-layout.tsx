@@ -58,6 +58,7 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                             padding:'20px 20px'
                         }}
                     >
+                        {/* TODO 임시데이터 교체작업 */}
                         <Menu menuData={data1} />
                     </Box>
                 </Drawer>

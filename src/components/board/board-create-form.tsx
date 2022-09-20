@@ -193,8 +193,6 @@ const BoardCreateForm: FC<any> = (props) => {
                                 change:handleChange,
 
                             }}
-
-
                             // hooks={{
                             // 이미지 저장 할때 사용할 훅
                             // addImageBlobHook: async (blob,callback)=> {

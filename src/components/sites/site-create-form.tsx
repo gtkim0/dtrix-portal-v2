@@ -29,26 +29,44 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
     const [admin,setAdmin] = useState<string | null>()
     const [dbValue,setDbValue] = useState<any>('postgre');
 
+    // const [form, setForm] = useState({
+    //     siteName:'',
+    //     siteAdmin:'',
+    //     siteDescription:'',
+    //     board:false,
+    //     dashboard:false,
+    //     dbDriver:'',
+    //     dbUrl:'',
+    //     dbUser:'',
+    //     dbPassword:''
+    // })
+
     const formik = useFormik({
         initialValues: {
-            siteName: '',
-            siteDomain: '',
-            siteEnabled:true,
-            siteDefault:true,
+            siteName:'',
+            siteAdmin:'',
+            siteDescription:'',
+            board:false,
+            dashboard:false,
+            dbDriver:'',
+            dbUrl:'',
+            dbUser:'',
+            dbPassword:''
         },
         validationSchema: Yup.object({
-            siteName: Yup
-                .string()
-                .max(255)
-                .required('이름 is required'),
-            siteDomain: Yup
-                .string()
-                .max(255)
-                .required('도메인 is required'),
+            // siteName: Yup
+            //     .string()
+            //     .max(255)
+            //     .required('이름 is required'),
+            // siteDomain: Yup
+            //     .string()
+            //     .max(255)
+            //     .required('도메인 is required'),
         }),
         onSubmit: async (values, helpers): Promise<void> => {
             try {
                 // @ts-ignore
+                console.log(values);
                 const result = await siteApi.createSite(values);
                 if (result.code === 200) {
                     toast.success('Site created!');
@@ -58,15 +76,30 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                 console.error(err);
                 toast.error('Something went wrong!');
                 helpers.setStatus({success: false});
-                // helpers.setErrors({submit: err.message});
+                // @ts-ignore
+                helpers.setErrors({submit: err.message});
                 helpers.setSubmitting(false);
             }
         }
     });
 
-    const handleSetDb = (e:any) => {
 
-    }
+
+    // const handleSetDb = (e:React.ChangeEvent<HTMLInputElement>) => {
+    //     console.log(e.target.value);
+    // }
+    //
+    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
+    //
+    // }
+
+    // const handleCheckChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+    //     const {name, checked} = e.target;
+    //     setForm({
+    //         ...form,
+    //         [name]:checked
+    //     })
+    // }
 
 
     return (
@@ -96,7 +129,7 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                     name="siteName"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    required
+                                    // required
                                     value={formik.values.siteName}
                                 />
                             </Grid>
@@ -123,17 +156,18 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 {/*    }*/}
                                 {/*/>*/}
                                 <TextField
-                                    error={Boolean(formik.touched.siteDomain && formik.errors.siteDomain)}
+                                    error={Boolean(formik.touched.siteAdmin && formik.errors.siteAdmin)}
                                     fullWidth
-                                    helperText={formik.touched.siteDomain && formik.errors.siteDomain}
+                                    helperText={formik.touched.siteAdmin && formik.errors.siteAdmin}
                                     label="관리자"
                                     select
-                                    name="siteDomain"
+                                    name="siteAdmin"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    required
-                                    value={formik.values.siteDomain}
+                                    // required
+                                    value={formik.values.siteAdmin}
                                 >
+                                    {/*TODO UserList 받아와서 보여줘야함.*/}
                                     <MenuItem>유저1</MenuItem>
                                     <MenuItem>유저2</MenuItem>
                                     <MenuItem>유저3</MenuItem>
@@ -145,32 +179,19 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 xs={12}
                             >
                                 <TextField
+                                    error={Boolean(formik.touched.siteDescription && formik.errors.siteDescription)}
+                                    fullWidth
+                                    helperText={formik.touched.siteDescription && formik.errors.siteDescription}
+                                   label={"사이트 설명"}
+                                   name={"siteDescription"}
                                    rows={5}
-                                   fullWidth
                                    multiline
                                    placeholder={"사이트 설명"}
+                                    onChange={formik.handleChange}
+                                    value={formik.values.siteDescription}
                                 />
 
                             </Grid>
-                            {/*<Grid*/}
-                            {/*    item*/}
-                            {/*    md={6}*/}
-                            {/*    xs={12}*/}
-                            {/*>*/}
-                            {/*    <FormGroup>*/}
-                            {/*        <FormControlLabel control={<Checkbox name={"siteEnabled"} checked={formik.values.siteEnabled} onChange={formik.handleChange} />} label={"사이트허용"}/>*/}
-                            {/*    </FormGroup>*/}
-                            {/*</Grid>*/}
-
-                            {/*<Grid*/}
-                            {/*    item*/}
-                            {/*    md={6}*/}
-                            {/*    xs={12}*/}
-                            {/*>*/}
-                            {/*    <FormGroup>*/}
-                            {/*        <FormControlLabel control={<Checkbox name={"siteDefault"} checked={formik.values.siteDefault} onChange={formik.handleChange} />} label={"사이트허용"}/>*/}
-                            {/*    </FormGroup>*/}
-                            {/*</Grid>*/}
                         </Grid>
                     </CardContent>
                 </Card>
@@ -190,10 +211,24 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
 
 
                                 <FormControlLabel
-                                    control={<Switch />} label={"보드"}
+                                    control={
+                                    <Switch
+                                        onBlur={formik.handleBlur}
+                                        onChange={formik.handleChange}
+                                        value={formik.values.board}
+                                        name={"board"}
+                                    />}
+                                    label={"보드"}
                                 />
                                 <FormControlLabel
-                                    control={<Switch />} label={"대시보드"}
+                                    control={
+                                    <Switch
+                                        onBlur={formik.handleBlur}
+                                        onChange={formik.handleChange}
+                                        value={formik.values.dashboard}
+                                        name={"dashboard"}
+                                    />
+                                } label={"대시보드"}
                                 />
                             </Grid>
                         </Grid>
@@ -215,8 +250,12 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 <TextField
                                     fullWidth
                                     select
-                                    value={dbValue}
-                                    onChange={handleSetDb}
+                                    error={Boolean(formik.touched.dbDriver && formik.errors.dbDriver)}
+                                    helperText={formik.touched.dbDriver && formik.errors.dbDriver}
+                                    name={"dbDriver"}
+                                    // value={dbValue}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
                                     >
                                     <MenuItem key={"postgre"} value={"postgre"}>PostgreSQL</MenuItem>
                                     <MenuItem key={"maria"} value={"maria"}>Maria</MenuItem>
@@ -229,15 +268,15 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 md={6}
                             >
                                 <TextField
-                                    error={Boolean(formik.touched.siteName && formik.errors.siteName)}
+                                    error={Boolean(formik.touched.dbUrl && formik.errors.dbUrl)}
                                     fullWidth
-                                    helperText={formik.touched.siteName && formik.errors.siteName}
-                                    label="ip:port"
-                                    name="siteName"
+                                    helperText={formik.touched.dbUrl && formik.errors.dbUrl}
+                                    label="dbUrl"
+                                    name="dbUrl"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    required
-                                    value={formik.values.siteName}
+                                    // required
+                                    value={formik.values.dbUrl}
                                 />
                             </Grid>
                             <Grid
@@ -246,15 +285,15 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 md={6}
                             >
                                 <TextField
-                                    error={Boolean(formik.touched.siteName && formik.errors.siteName)}
+                                    error={Boolean(formik.touched.dbUser && formik.errors.dbUser)}
                                     fullWidth
-                                    helperText={formik.touched.siteName && formik.errors.siteName}
+                                    helperText={formik.touched.dbUser && formik.errors.dbUser}
                                     label="id"
-                                    name="siteName"
+                                    name="dbUser"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    required
-                                    value={formik.values.siteName}
+                                    // required
+                                    value={formik.values.dbUser}
                                 />
                             </Grid>
                             <Grid
@@ -263,15 +302,15 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 md={6}
                             >
                                 <TextField
-                                    error={Boolean(formik.touched.siteName && formik.errors.siteName)}
+                                    error={Boolean(formik.touched.dbPassword && formik.errors.dbPassword)}
                                     fullWidth
-                                    helperText={formik.touched.siteName && formik.errors.siteName}
+                                    helperText={formik.touched.dbPassword && formik.errors.dbPassword}
                                     label="password"
-                                    name="siteName"
+                                    name="dbPassword"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    required
-                                    value={formik.values.siteName}
+                                    // required
+                                    value={formik.values.dbPassword}
                                 />
                             </Grid>
                         </Grid>
@@ -287,14 +326,15 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                         mt: 3
                     }}
                 >
-                    <Link href={"/sites"}>
+
                         <Button
                             sx={{m: 1,ml:'auto'}}
                             variant="outlined"
+                            onClick={()=> router.push('/sites')}
                         >
                             취소
                         </Button>
-                    </Link>
+
                     <Button
                         sx={{m: 1}}
                         type="submit"

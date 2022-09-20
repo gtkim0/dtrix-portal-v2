@@ -68,7 +68,7 @@ const UserListTable:FC<IUserListTableProps> = (props) => {
                             return (
                                 <TableRow
                                     hover
-                                    key={user.id}
+                                    key={user.userId}
                                 >
                                     <TableCell sx={{ pl: 5, width: "50%" }}>
                                         <Box
@@ -88,7 +88,7 @@ const UserListTable:FC<IUserListTableProps> = (props) => {
                                             </Avatar>
                                             <Box sx={{ml: 1}}>
                                                 <NextLink
-                                                    href={`/users/${user.id}`}
+                                                    href={`/users/${user.userId}`}
                                                 >
                                                         {user.userName}
                                                 </NextLink>
@@ -96,19 +96,19 @@ const UserListTable:FC<IUserListTableProps> = (props) => {
                                                     color="textSecondary"
                                                     variant="body2"
                                                 >
-                                                    {user.username}
+                                                    {user.userName}
                                                 </Typography>
                                             </Box>
                                         </Box>
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="body2">
-                                            {user.siteName}
+                                            {user.groupId}
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="body2">
-                                            {user.userRole}
+                                            {user.roleId}
                                         </Typography>
                                     </TableCell>
                                     <TableCell>
@@ -118,13 +118,13 @@ const UserListTable:FC<IUserListTableProps> = (props) => {
                                     </TableCell>
                                     <TableCell>
                                         <Typography variant="body2">
-                                            {dateFormat(user.createDate)}
+                                            {dateFormat(user.createAt)}
                                         </Typography>
                                     </TableCell>
 
                                     <TableCell align="right">
                                         <NextLink
-                                            href={`/users/${user.id}/edit`}
+                                            href={`/users/${user.userId}/edit`}
                                             passHref
                                         >
                                             <IconButton component="a">
@@ -132,7 +132,7 @@ const UserListTable:FC<IUserListTableProps> = (props) => {
                                             </IconButton>
                                         </NextLink>
                                         <NextLink
-                                            href={`/users/${user.id}`}
+                                            href={`/users/${user.userId}`}
                                             passHref
                                         >
                                             <IconButton component="a">

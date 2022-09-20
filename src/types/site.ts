@@ -3,15 +3,22 @@ export interface SiteBase {
 }
 
 export interface Site extends SiteBase {
-    siteId: number;
+    // siteId: number;
     siteName:string,
-    siteDomain:string,
-    siteEnabled:false,
-    siteDefault:false,
+    siteAdmin:string,
+    siteDescription:string,
+    board:boolean,
+    dashboard:boolean,
+    dbDriver:string,
+    dbUrl:string,
+    dbUser:string,
+    dbPassword:string
+    // siteEnabled:false,
+    // siteDefault:false,
     createAt:number,
     modifiedAt:number,
-    userId: string,
-    id:number,
+    // userId: string,
+    // id:number,
     [key: string]: any;
 }
 

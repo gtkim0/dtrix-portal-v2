@@ -46,7 +46,7 @@ const SiteListTable:FC<ISiteListTable> = (props) => {
                                 사이트이름
                             </TableCell>
                             <TableCell sx={{textAlign:'center'}}>
-                                사이트도메인
+                                사이트관리자
                             </TableCell>
                             <TableCell sx={{textAlign:'center'}}>
                                 사이트 허용

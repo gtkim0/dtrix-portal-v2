@@ -1,4 +1,4 @@
-import React from 'react';
+import React,{useState} from 'react';
 import type {FC, ChangeEvent} from 'react';
 import {
     Table,
@@ -16,6 +16,7 @@ import Typography from '@mui/material/Typography';
 import {PencilAlt as PencilAltIcon} from "../../icons/pencil-alt";
 import {ArrowRight as ArrowRightIcon} from "../../icons/arrow-right";
 import {useAuth} from "../../hooks/use-auth";
+import BoardModal from './board-modal';
 
 interface IBoardListTableProps {
     board:any;
@@ -41,21 +42,42 @@ const useStyles = makeStyles((theme:Theme)=> createStyles({
 const BoardListTable:FC<IBoardListTableProps> = (props) => {
     const classes = useStyles();
     const user = useAuth();
+    const [open,setOpen] = useState(false);
+    const [openId,setOpenId] = useState<number>(0);
 
     const { board,total,size,page, onPageChange,onRowsPerPageChange } = props;
     if(!board){
         return null;
     }
-    // window.open(`/board/${board.bulletinId}`)
+    
+    const handleOpenPopup = (id:any) => {
+        setOpen(true);
+        setOpenId(id);
+    }
+
+    const handleClose = () => {
+        setOpen(false);
+    }
+
     const getSelectWindow = (board:any) => {
-        if(false){
+        // TODO
+        // board.popup 이 true 이면 popup으로 띄우기.
+        const popup = true;
+        if(popup){
             return (
-                // TODO 팝업인지 새창인지 모르겠네.  -> modal 창으로 수정
-                <Link onClick={()=>window.open(`/board/${board.bulletinId}`)}>
+                // TODO 팝업인지 새창인지 모르겠네.  -> modal 팝업창으로 수정
+                // <Link onClick={()=>window.open(`/board/${board.bulletinId}`)}>
+                //     <Typography sx={{cursor:'pointer'}}>
+                //         {board.bulletinId}
+                //     </Typography>
+                // </Link>
+                <Link onClick={()=>handleOpenPopup(board.bulletinId)}>
                     <Typography sx={{cursor:'pointer'}}>
                         {board.bulletinId}
                     </Typography>
                 </Link>
+                
+
             )
         }else{
             return (
@@ -193,6 +215,7 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
                     },
                 })}
             />
+             <BoardModal open={open} openId={openId} handleClose={handleClose} />
         </>
     )
 }

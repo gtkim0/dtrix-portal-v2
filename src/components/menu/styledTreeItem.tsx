@@ -47,6 +47,7 @@ export const StyledTreeItem = (props:any) => {
     const viewPage = (e:any,node:any) => {
         console.log(e);
         console.log(node);
+        //TODO child 가 있으면??  아니면 route 가 있으면? push 아니면 하위페이지 오픈
         if(node.route){
             router.push(`${node.route}`);
         }
