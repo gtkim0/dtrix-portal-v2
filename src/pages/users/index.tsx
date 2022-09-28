@@ -24,6 +24,7 @@ import Layout from "../../components/Layout/layout";
 import axios from "axios";
 import {userApi} from "../../apis/user-api";
 import { useAuth } from "../../hooks/use-auth";
+import {useGetUsersQuery} from "../../store/bulletinApliSlice";
 
 type Sort =
     | 'createDate|desc'
@@ -63,7 +64,14 @@ const User: NextPage = () => {
     const userInfo = useAuth();
     console.log(userInfo);
     // const {userInfo} = userRoleInfo;
-    
+    const user = useAuth();
+
+    const {data, error,isLoading} = useGetUsersQuery('getUsers');
+    console.log("data",data);
+    console.log("error",error);
+    console.log("isLoading",isLoading);
+
+
 
     const {t} = useTranslation();
     const [users, setUsers] = useState<User[]>([]);
@@ -116,7 +124,6 @@ const User: NextPage = () => {
         }
     }, [])
 
-    console.log(sort);
     useEffect(() => {
         const params = {
             user: filters.user,
@@ -131,14 +138,11 @@ const User: NextPage = () => {
         getUsers(params);
     }, [role, page, size, filters, sort])
 
+
+    console.log(user);
     
-
-    let userLevel = '2';
-
-
-    // console.log(userRoleInfo);
-    // TODO 로그인 USER 정보 가져오서 userrole 에 따른 메뉴처리
-    const menu = userLevel === '1' ?
+    // TODO 로그인 USER 정보 가져오서 userrole 에 
+    const menu = user.user?.roleId !== 1 ?
     [
         {id:'',value:"전체"},
         {id:'system', value:'사이트 관리자'},
@@ -151,7 +155,6 @@ const User: NextPage = () => {
         {id:'system',value:'사이트 관리자'},
         {id:'user',value:'사용자'}
     ]
- 
     return (
         <>
             <Head>

@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useEffect, useState} from 'react';
 import type {FC} from 'react';
 import {
     Autocomplete,
@@ -18,6 +18,8 @@ import {useRouter} from "next/router";
 import {useFormik} from "formik";
 import Link from "next/link";
 import {siteApi} from "../../apis/site-api";
+import {userApi} from "../../apis/user-api";
+import {User} from "../../types/user";
 
 interface ISiteCreateFormProps {
 
@@ -29,29 +31,20 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
     const [admin,setAdmin] = useState<string | null>()
     const [dbValue,setDbValue] = useState<any>('postgre');
 
-    // const [form, setForm] = useState({
-    //     siteName:'',
-    //     siteAdmin:'',
-    //     siteDescription:'',
-    //     board:false,
-    //     dashboard:false,
-    //     dbDriver:'',
-    //     dbUrl:'',
-    //     dbUser:'',
-    //     dbPassword:''
-    // })
 
     const formik = useFormik({
         initialValues: {
             siteName:'',
-            siteAdmin:'',
+            userName:'',
             siteDescription:'',
-            board:false,
-            dashboard:false,
-            dbDriver:'',
-            dbUrl:'',
-            dbUser:'',
-            dbPassword:''
+            siteSso:false,
+
+            // board:false,
+            // dashboard:false,
+            // dbDriver:'',
+            // dbUrl:'',
+            // dbUser:'',
+            // dbPassword:''
         },
         validationSchema: Yup.object({
             // siteName: Yup
@@ -83,23 +76,28 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
         }
     });
 
+    const [users, setUsers] = useState<User[]>([]);
+    const getUser =  async () => {
 
+        const params = {
+            page:0,
+            size:100
+        }
 
-    // const handleSetDb = (e:React.ChangeEvent<HTMLInputElement>) => {
-    //     console.log(e.target.value);
-    // }
-    //
-    // const handleChange = (e: React.ChangeEvent<HTMLInputElement>)=> {
-    //
-    // }
+        try {
+            const result =  await userApi.getUsers(params);
+            const {total, list}:any = result.data;
+            if(result){
+                setUsers(list);
+            }
+        }catch (err) {
+            console.error(err);
+        }
+    }
 
-    // const handleCheckChange = (e:React.ChangeEvent<HTMLInputElement>) => {
-    //     const {name, checked} = e.target;
-    //     setForm({
-    //         ...form,
-    //         [name]:checked
-    //     })
-    // }
+    useEffect(()=> {
+        getUser();
+    },[])
 
 
     return (
@@ -156,21 +154,23 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 {/*    }*/}
                                 {/*/>*/}
                                 <TextField
-                                    error={Boolean(formik.touched.siteAdmin && formik.errors.siteAdmin)}
+                                    error={Boolean(formik.touched.userName && formik.errors.userName)}
                                     fullWidth
-                                    helperText={formik.touched.siteAdmin && formik.errors.siteAdmin}
+                                    helperText={formik.touched.userName && formik.errors.userName}
                                     label="관리자"
                                     select
-                                    name="siteAdmin"
+                                    name="userName"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
                                     // required
-                                    value={formik.values.siteAdmin}
+                                    value={formik.values.userName}
                                 >
                                     {/*TODO UserList 받아와서 보여줘야함.*/}
-                                    <MenuItem>유저1</MenuItem>
-                                    <MenuItem>유저2</MenuItem>
-                                    <MenuItem>유저3</MenuItem>
+                                    {
+                                        users.map((data)=> (
+                                            <MenuItem value={data.userId} key={data.userId}>{data.userName}</MenuItem>
+                                        ))
+                                    }
                                 </TextField>
                             </Grid>
                             <Grid
@@ -192,130 +192,150 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 />
 
                             </Grid>
-                        </Grid>
-                    </CardContent>
-                </Card>
-                <Divider />
-                <Card>
-                    <CardHeader title="서비스 정보"/>
-                    <CardContent>
-                        <Grid>
-                            <Grid>
-                                {/*TODO 여기는 추후에 데이터불러와서 동적으로 변하게처리해야함*/}
+                            <Grid
+                                item
+                                md={12}
+                                xs={12}
+                            >
+                                {/*<TextField*/}
+                                {/*    error={Boolean(formik.touched.siteSso && formik.errors.siteSso)}*/}
+                                {/*    // fullWidth*/}
+                                {/*    helperText={formik.touched.siteSso && formik.errors.siteSso}*/}
+                                {/*    label={"sso 여부"}*/}
+                                {/*    name={"siteSso"}*/}
+                                {/*    // rows={5}*/}
+                                {/*    // multiline*/}
+                                {/*    placeholder={"sso 여부"}*/}
+                                {/*    onChange={formik.handleChange}*/}
+                                {/*    value={formik.values.siteSso}*/}
+                                {/*/>*/}
+                                <FormControlLabel control={<Checkbox name={"siteSso"} value={formik.values.siteSso} onChange={formik.handleChange} />} label={"Sso 여부"} />
 
-                                {/*{*/}
-                                {/*    data.map((data)=> (*/}
-                                {/*        <FormControlLabel control={<Switch />} label={} />*/}
-                                {/*    ))*/}
-                                {/*}*/}
-
-
-                                <FormControlLabel
-                                    control={
-                                    <Switch
-                                        onBlur={formik.handleBlur}
-                                        onChange={formik.handleChange}
-                                        value={formik.values.board}
-                                        name={"board"}
-                                    />}
-                                    label={"보드"}
-                                />
-                                <FormControlLabel
-                                    control={
-                                    <Switch
-                                        onBlur={formik.handleBlur}
-                                        onChange={formik.handleChange}
-                                        value={formik.values.dashboard}
-                                        name={"dashboard"}
-                                    />
-                                } label={"대시보드"}
-                                />
                             </Grid>
                         </Grid>
                     </CardContent>
                 </Card>
                 <Divider />
-                <Card>
-                    <CardHeader title={"db"} />
-                    <CardContent>
-                        <Grid
-                            container
-                            spacing={2}
-                        >
-                            <Grid
-                                item
-                                xs={12}
-                                md={6}
-                            >
-                                <TextField
-                                    fullWidth
-                                    select
-                                    error={Boolean(formik.touched.dbDriver && formik.errors.dbDriver)}
-                                    helperText={formik.touched.dbDriver && formik.errors.dbDriver}
-                                    name={"dbDriver"}
-                                    // value={dbValue}
-                                    onBlur={formik.handleBlur}
-                                    onChange={formik.handleChange}
-                                    >
-                                    <MenuItem key={"postgre"} value={"postgre"}>PostgreSQL</MenuItem>
-                                    <MenuItem key={"maria"} value={"maria"}>Maria</MenuItem>
-                                    <MenuItem key={"oracle"} value={"oracle"}>Oracle</MenuItem>
-                                </TextField>
-                            </Grid>
-                            <Grid
-                                item
-                                xs={12}
-                                md={6}
-                            >
-                                <TextField
-                                    error={Boolean(formik.touched.dbUrl && formik.errors.dbUrl)}
-                                    fullWidth
-                                    helperText={formik.touched.dbUrl && formik.errors.dbUrl}
-                                    label="dbUrl"
-                                    name="dbUrl"
-                                    onBlur={formik.handleBlur}
-                                    onChange={formik.handleChange}
-                                    // required
-                                    value={formik.values.dbUrl}
-                                />
-                            </Grid>
-                            <Grid
-                                item
-                                xs={12}
-                                md={6}
-                            >
-                                <TextField
-                                    error={Boolean(formik.touched.dbUser && formik.errors.dbUser)}
-                                    fullWidth
-                                    helperText={formik.touched.dbUser && formik.errors.dbUser}
-                                    label="id"
-                                    name="dbUser"
-                                    onBlur={formik.handleBlur}
-                                    onChange={formik.handleChange}
-                                    // required
-                                    value={formik.values.dbUser}
-                                />
-                            </Grid>
-                            <Grid
-                                item
-                                xs={12}
-                                md={6}
-                            >
-                                <TextField
-                                    error={Boolean(formik.touched.dbPassword && formik.errors.dbPassword)}
-                                    fullWidth
-                                    helperText={formik.touched.dbPassword && formik.errors.dbPassword}
-                                    label="password"
-                                    name="dbPassword"
-                                    onBlur={formik.handleBlur}
-                                    onChange={formik.handleChange}
-                                    // required
-                                    value={formik.values.dbPassword}
-                                />
-                            </Grid>
-                        </Grid>
-                    </CardContent>
-                </Card>
+                {/*<Card>*/}
+                {/*    <CardHeader title="서비스 정보"/>*/}
+                {/*    <CardContent>*/}
+                {/*        <Grid>*/}
+                {/*            <Grid>*/}
+                {/*                /!*TODO 여기는 추후에 데이터불러와서 동적으로 변하게처리해야함*!/*/}
+
+                {/*                /!*{*!/*/}
+                {/*                /!*    data.map((data)=> (*!/*/}
+                {/*                /!*        <FormControlLabel control={<Switch />} label={} />*!/*/}
+                {/*                /!*    ))*!/*/}
+                {/*                /!*}*!/*/}
+
+
+                {/*                <FormControlLabel*/}
+                {/*                    control={*/}
+                {/*                    <Switch*/}
+                {/*                        onBlur={formik.handleBlur}*/}
+                {/*                        onChange={formik.handleChange}*/}
+                {/*                        value={formik.values.board}*/}
+                {/*                        name={"board"}*/}
+                {/*                    />}*/}
+                {/*                    label={"보드"}*/}
+                {/*                />*/}
+                {/*                <FormControlLabel*/}
+                {/*                    control={*/}
+                {/*                    <Switch*/}
+                {/*                        onBlur={formik.handleBlur}*/}
+                {/*                        onChange={formik.handleChange}*/}
+                {/*                        value={formik.values.dashboard}*/}
+                {/*                        name={"dashboard"}*/}
+                {/*                    />*/}
+                {/*                } label={"대시보드"}*/}
+                {/*                />*/}
+                {/*            </Grid>*/}
+                {/*        </Grid>*/}
+                {/*    </CardContent>*/}
+                {/*</Card>*/}
+                {/*<Divider />*/}
+                {/*<Card>*/}
+                {/*    <CardHeader title={"db"} />*/}
+                {/*    <CardContent>*/}
+                {/*        <Grid*/}
+                {/*            container*/}
+                {/*            spacing={2}*/}
+                {/*        >*/}
+                {/*            <Grid*/}
+                {/*                item*/}
+                {/*                xs={12}*/}
+                {/*                md={6}*/}
+                {/*            >*/}
+                {/*                <TextField*/}
+                {/*                    fullWidth*/}
+                {/*                    select*/}
+                {/*                    error={Boolean(formik.touched.dbDriver && formik.errors.dbDriver)}*/}
+                {/*                    helperText={formik.touched.dbDriver && formik.errors.dbDriver}*/}
+                {/*                    name={"dbDriver"}*/}
+                {/*                    // value={dbValue}*/}
+                {/*                    onBlur={formik.handleBlur}*/}
+                {/*                    onChange={formik.handleChange}*/}
+                {/*                    >*/}
+                {/*                    <MenuItem key={"postgre"} value={"postgre"}>PostgreSQL</MenuItem>*/}
+                {/*                    <MenuItem key={"maria"} value={"maria"}>Maria</MenuItem>*/}
+                {/*                    <MenuItem key={"oracle"} value={"oracle"}>Oracle</MenuItem>*/}
+                {/*                </TextField>*/}
+                {/*            </Grid>*/}
+                {/*            <Grid*/}
+                {/*                item*/}
+                {/*                xs={12}*/}
+                {/*                md={6}*/}
+                {/*            >*/}
+                {/*                <TextField*/}
+                {/*                    error={Boolean(formik.touched.dbUrl && formik.errors.dbUrl)}*/}
+                {/*                    fullWidth*/}
+                {/*                    helperText={formik.touched.dbUrl && formik.errors.dbUrl}*/}
+                {/*                    label="dbUrl"*/}
+                {/*                    name="dbUrl"*/}
+                {/*                    onBlur={formik.handleBlur}*/}
+                {/*                    onChange={formik.handleChange}*/}
+                {/*                    // required*/}
+                {/*                    value={formik.values.dbUrl}*/}
+                {/*                />*/}
+                {/*            </Grid>*/}
+                {/*            <Grid*/}
+                {/*                item*/}
+                {/*                xs={12}*/}
+                {/*                md={6}*/}
+                {/*            >*/}
+                {/*                <TextField*/}
+                {/*                    error={Boolean(formik.touched.dbUser && formik.errors.dbUser)}*/}
+                {/*                    fullWidth*/}
+                {/*                    helperText={formik.touched.dbUser && formik.errors.dbUser}*/}
+                {/*                    label="id"*/}
+                {/*                    name="dbUser"*/}
+                {/*                    onBlur={formik.handleBlur}*/}
+                {/*                    onChange={formik.handleChange}*/}
+                {/*                    // required*/}
+                {/*                    value={formik.values.dbUser}*/}
+                {/*                />*/}
+                {/*            </Grid>*/}
+                {/*            <Grid*/}
+                {/*                item*/}
+                {/*                xs={12}*/}
+                {/*                md={6}*/}
+                {/*            >*/}
+                {/*                <TextField*/}
+                {/*                    error={Boolean(formik.touched.dbPassword && formik.errors.dbPassword)}*/}
+                {/*                    fullWidth*/}
+                {/*                    helperText={formik.touched.dbPassword && formik.errors.dbPassword}*/}
+                {/*                    label="password"*/}
+                {/*                    name="dbPassword"*/}
+                {/*                    onBlur={formik.handleBlur}*/}
+                {/*                    onChange={formik.handleChange}*/}
+                {/*                    // required*/}
+                {/*                    value={formik.values.dbPassword}*/}
+                {/*                />*/}
+                {/*            </Grid>*/}
+                {/*        </Grid>*/}
+                {/*    </CardContent>*/}
+                {/*</Card>*/}
                 <Box
                     sx={{
                         display: 'flex',

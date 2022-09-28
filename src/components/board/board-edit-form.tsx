@@ -20,31 +20,32 @@ const BoardEditForm:FC<IBoardEditFormProps> = (props) => {
     const id = Number(router.query.id);
     const editorRef = useRef<Editor>(null);
     const [title,setTitle] = useState<string>('');
-    const [content, setContent] = useState({html: '', md: ''})
+    // const [content, setContent] = useState('')
 
     const handleSubmit = () => {
         const instance = editorRef.current?.getInstance();
 
         //TODO 업데이트 api 제대로 실행되는지 확인.
         //이미지 같은거 넣을수 있는지 확인
-        // const params = {
-        //     title: title,
-        //     content: instance?.getHTML()
-        // }
+        const params = {
+            bulletinId: id,
+            title: title,
+            content: instance?.getHTML()
+        }
 
-        // const result = boardApi.updateBoard(id,params);
+        const result = boardApi.updateBoard(params);
+
         // if(result === 'true'){
         //     // 성공했을떄,
         //     router.push(`/board`);
         // }
 
 
-        if (instance) {
-            setContent({
-                html: instance.getHTML(),
-                md: instance.getMarkdown()
-            })
-        }
+        // if (instance) {
+        //     setContent({
+        //         instance.getHTML(),
+        //     })
+        // }
     }
 
 
@@ -54,7 +55,11 @@ const BoardEditForm:FC<IBoardEditFormProps> = (props) => {
     }
 
     const handleDeleteBoard = () => {
-        // const result = boardApi.deleteBoard(id);
+        const params = {
+            bulletinId: id,
+        }
+
+        // const result = boardApi.deleteBoard(params);
         // if(result) {
         //     // TODO
         //     // result 가 성공일때 성공메세지같은거 띄워주고

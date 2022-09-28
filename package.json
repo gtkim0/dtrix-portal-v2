@@ -31,13 +31,14 @@
     "date-fns": "^2.29.3",
     "formik": "^2.2.9",
     "i18next": "^21.9.1",
+    "lodash": "^4.17.21",
     "next": "12.2.5",
     "react": "18.2.0",
     "react-cookie": "^4.1.1",
     "react-dom": "18.2.0",
     "react-hot-toast": "^2.3.0",
     "react-i18next": "^11.18.4",
-    "react-redux": "^8.0.2",
+    "react-redux": "^8.0.4",
     "react-split-pane": "^0.1.92",
     "simplebar-react": "^2.4.1",
     "styled-component": "^2.8.0",
@@ -50,6 +51,7 @@
     "@types/react": "18.0.17",
     "@types/react-dom": "18.0.6",
     "eslint": "8.22.0",
-    "eslint-config-next": "12.2.5"
+    "eslint-config-next": "12.2.5",
+    "redux-logger": "^3.0.6"
   }
 }

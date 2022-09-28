@@ -4,16 +4,20 @@ import {PropertyList} from "../property-list";
 import {PropertyListItem} from "../property-list-item";
 
 interface IUserBasicDetailProps {
-    userId: string
-    username: string;
-    name: string;
-    userRole:string
-    userSso:boolean
+    userLoginId: string
+    userName: string;
+    userPhone: string;
+    userEmail:string;
+    positionName:string;
+    userSso:boolean;
+    groupId:number;
+    roleId:number;
+    siteId:number;
 }
 
 const UserBasicDetail:FC<IUserBasicDetailProps> = (props) => {
 
-    const {userId,username,name, userRole,userSso,...rest} = props;
+    const {userLoginId,userName,userPhone, userEmail,positionName,userSso,groupId,roleId,siteId,...rest} = props;
 
     const align =  'horizontal' ;
     return (
@@ -26,25 +30,63 @@ const UserBasicDetail:FC<IUserBasicDetailProps> = (props) => {
                         align={align}
                         divider
                         label="아이디"
-                        value={userId}
+                        value={userLoginId}
                     />
                     <PropertyListItem
                         align={align}
                         divider
                         label="사용자명"
-                        value={username}
+                        value={userName}
                     />
                     <PropertyListItem
                         align={align}
                         divider
-                        label="사용자권한"
-                        value={userRole}
+                        label="휴대폰 번호"
+                        value={userPhone}
+                    />
+                    <PropertyListItem
+                        align={align}
+                        divider
+                        label="이메일"
+                        value={userEmail}
                     />
                     <PropertyListItem
                         align={align}
                         divider
                         label="sso 인증여부"
                         value={userSso? "Y": "N"}
+                    />
+                    <PropertyListItem
+                        align={align}
+                        divider
+                        label="직책"
+                        value={positionName}
+                    />
+
+                    <PropertyListItem
+                        align={align}
+                        divider
+                        label="sso 인증여부"
+                        value={userSso? "Y": "N"}
+                    />
+
+                    <PropertyListItem
+                        align={align}
+                        divider
+                        label="그룹"
+                        value={groupId?.toString()}
+                    />
+                    <PropertyListItem
+                        align={align}
+                        divider
+                        label="권한"
+                        value={roleId?.toString()}
+                    />
+                    <PropertyListItem
+                        align={align}
+                        divider
+                        label="사이트"
+                        value={siteId?.toString()}
                     />
                 </PropertyList>
                 <CardActions

@@ -46,16 +46,10 @@ const SiteListTable:FC<ISiteListTable> = (props) => {
                                 사이트이름
                             </TableCell>
                             <TableCell sx={{textAlign:'center'}}>
-                                사이트관리자
+                                관리자
                             </TableCell>
                             <TableCell sx={{textAlign:'center'}}>
-                                사이트 허용
-                            </TableCell>
-                            <TableCell sx={{textAlign:'center'}}>
-                                사이트 기본
-                            </TableCell>
-                            <TableCell sx={{textAlign:'center'}}>
-                                유저 아이디
+                                Sso 사용여부
                             </TableCell>
                             <TableCell sx={{textAlign:'center'}}>
                                 생성일
@@ -70,40 +64,31 @@ const SiteListTable:FC<ISiteListTable> = (props) => {
                                 hover
                                 key={site.siteId}
                             >
-                                <TableCell sx={{pl:5,width:"40%"}}>
-                                    <NextLink href={`/sites/${site.siteId}` }>
-                                        <Link>
+                                <TableCell sx={{pl:5,width:"20%"}}>
+                                    {/*<NextLink href={`/sites/${site.siteId}` }>*/}
+                                    {/*    <Link>*/}
                                             <Typography sx={{cursor:'pointer'}}>
                                                 {site.siteName}
                                             </Typography>
-                                        </Link>
-                                    </NextLink>
+                                    {/*    </Link>*/}
+                                    {/*</NextLink>*/}
                                 </TableCell>
                                 <TableCell>
                                     <Typography sx={{textAlign:'center'}}>
-                                        {site.siteDomain}
+                                        {site.userName}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <FormGroup >
-                                        <FormControlLabel sx={{justifyContent:"center",margin:'0 auto'}} control={<Checkbox disabled sx={{cursor:'text'}} checked={site.siteEnabled && true} onChange={()=>{}} />} label={""}/>
-                                    </FormGroup>
-                                </TableCell>
-                                <TableCell>
-                                    <FormGroup>
-                                        <FormControlLabel sx={{justifyContent:"center",margin:'0 auto'}} control={<Checkbox disabled sx={{cursor:'text'}} checked={site.siteDefault && true} onChange={()=>{}} />} label={""}/>
-                                    </FormGroup>
-                                </TableCell>
-                                <TableCell sx={{pl:5}}>
-                                    <Typography>
-                                        {site.userId}
+                                    <Typography sx={{textAlign:'center'}}>
+                                        {site.siteSso ? "Y": "N"}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>
-                                    <Typography sx={{margin:'0 auto'}}>
-                                        {/* {dateFormat(site.createAt)} */}
+                                    <Typography sx={{textAlign:'center'}}>
+                                        {site.createdAt.slice(0,10)}
                                     </Typography>
                                 </TableCell>
+
                                 <TableCell align={"right"}>
                                     <NextLink
                                         href={`/sites/${site.siteId}/edit`}

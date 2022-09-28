@@ -21,7 +21,7 @@ export interface User extends UserBase {
     userId:number;
     avatar:string;
     userLoginId : string;
-    // userPassword: string;
+    userPassword: string;
     userName:string;
     userPhone:string;
     userEmail:string;

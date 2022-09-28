@@ -47,18 +47,20 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
             userEmail:'',
             userSso: false,
             positionName:'',
-            groupId:0,
-            roleId:0,
-            siteId:0
+            groupId:1,
+            roleId:1,
+            siteId:1
         },
         validationSchema: Yup.object({
             userLoginId: Yup
                 .string()
                 .min(5)
                 .max(255)
-                .required('아이디 is required'),
+                .required('로그인 아이디 is required'),
             userPassword: Yup
                 .string()
+                .min(5)
+                .max(20)
                 .required('암호 is required'),
 
             userPasswordConfirm: Yup
@@ -72,12 +74,10 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                 .required('이름 is required'),
 
             userPhone: Yup
-                .string().matches(phoneRegExp,'phone number is not valid')
-                .required("phone is required"),
+                .string().matches(phoneRegExp,'phone number is not valid'),
             userEmail : Yup
                 .string()
-                .email()
-                .required('email is required'),
+                .email(),
             siteId : Yup
                 .string()
                 .required("site is required")
@@ -145,7 +145,7 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     error={Boolean(formik.touched.userPassword && formik.errors.userPassword)}
                                     fullWidth
                                     helperText={formik.touched.userPassword && formik.errors.userPassword}
-                                    label="패스워드"
+                                    label="암호"
                                     name="userPassword"
                                     onBlur={formik.handleBlur}
                                     type="password"
@@ -163,7 +163,7 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     error={Boolean(formik.touched.userPasswordConfirm && formik.errors.userPasswordConfirm)}
                                     fullWidth
                                     helperText={formik.touched.userPasswordConfirm && formik.errors.userPasswordConfirm}
-                                    label="패스워드 확인"
+                                    label="암호 확인"
                                     name="userPasswordConfirm"
                                     type={"password"}
                                     onBlur={formik.handleBlur}
@@ -181,7 +181,7 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     error={Boolean(formik.touched.userName && formik.errors.userName)}
                                     fullWidth
                                     helperText={formik.touched.userName && formik.errors.userName}
-                                    label="이름"
+                                    label="사용자명"
                                     name="userName"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}

@@ -35,7 +35,7 @@ class UserApi {
     }
 
     updateUserPassword(user: User): Promise<Result<User>> {
-        return instance.patch<Result<User>, Result<User>>(`${path}/${user.id}`, user);
+        return instance.patch<Result<User>, Result<User>>(`${path}/${user.userId}`, user);
     }
 
     deleteUser(id: any): Promise<Result<User>> {

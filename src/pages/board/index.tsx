@@ -19,7 +19,7 @@ const Board:NextPage = () => {
 
     const [total, setTotal] = useState<number>(0);
     const [size, setSize] = useState<number>(10);
-    const [page, setPage] = useState<number>(0);
+    const [page, setPage] = useState<number>(1);
 
 
 
@@ -50,11 +50,11 @@ const Board:NextPage = () => {
     useEffect(()=> {
         // 게시글 api 호출
         // TODO 페이징 기능 처리필요
-        // const params = {
-        //     page:page,
-        //     size:size
-        // }
-        // getBoardList(params);
+        const params = {
+            page:page,
+            // size:size
+        }
+        getBoardList(params);
     },[page,size,filters])
 
 

@@ -102,7 +102,7 @@ export const TreeComponent:FC<ITreeComponentProps> = (props) => {
                aria-label="file system navigator"
                defaultCollapseIcon={<ExpandMoreIcon  />}
                defaultExpandIcon={<ChevronRightIcon  />}
-               defaultEndIcon={<CloseSquare />}
+            //    defaultEndIcon={<CloseSquare />}
                sx={{ height: 240, flexGrow: 1, maxWidth: 1000, overflowY: 'auto' }}
            >
                {renderItems(treeItem)}

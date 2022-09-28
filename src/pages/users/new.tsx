@@ -6,9 +6,10 @@ import Layout from "../../components/Layout/layout";
 import UserCreateForm from "../../components/users/user-create-form";
 import {siteApi} from "../../apis/site-api";
 import {siteInfo} from "../../types/site";
+import { useAuth } from '../../hooks/use-auth';
 
 const UserCreate: NextPage = () => {
-
+    const user = useAuth();
     const [siteTotalList, setSiteTotalList] = useState<siteInfo[]>([]);
     const getSiteTotalList = useCallback(async () => {
         try {
@@ -26,9 +27,8 @@ const UserCreate: NextPage = () => {
         getSiteTotalList();
     }, [])
 
-    //TODO 유저정보 API 받아오면 수정
-    const userLevel = 1;
-    const menu = userLevel=== 1 ? 
+   
+    const menu = user.user?.roleId !== 1 ?
     [
         {id:'',value:"전체"},
         {id:'system', value:'사이트 관리자'},
@@ -42,7 +42,6 @@ const UserCreate: NextPage = () => {
         {id:'user',value:'사용자'}
     ]
 
-    console.log(menu);
     return (
         <>
             <Head>

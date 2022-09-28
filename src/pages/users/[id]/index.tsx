@@ -18,24 +18,31 @@ const UserDetail: NextPage = () => {
     const router = useRouter();
     const isMounted = useMounted();
     const [user, setUser] = useState<User | null>(null);
-    const id = router.query.id;
+    const [queryId,setQueryId] = useState<number>(0);
 
-    const getUser = useCallback(async () => {
+    const getUser = useCallback(async (id:any) => {
         try {
-            const res = await userApi.getUser(router.query.id);
-            const {data} = res;
-            if (isMounted()) {
-                setUser(data);
-            }
+                const res = await userApi.getUser(id);
+                const {data} = res;
+                if (isMounted()) {
+                    setUser(data);
+                }
         } catch (err: any) {
             toast.error(err);
         }
     }, [isMounted])
 
     useEffect(() => {
-        if (id)
-            getUser();
-    }, [])
+        if (queryId !== 0 )
+            getUser(queryId);
+    }, [queryId])
+
+    useEffect(()=> {
+        const { id } = router.query;
+        if(id && Number(id) !== 0) {
+            setQueryId(Number(id));
+        }
+    },[router.query])
 
     if (!user) {
         return null;
@@ -117,7 +124,7 @@ const UserDetail: NextPage = () => {
                                             user_id:
                                         </Typography>
                                         <Chip
-                                            label={user.id}
+                                            label={user.userId}
                                             size="small"
                                             sx={{ml: 1}}
                                         />
@@ -129,7 +136,7 @@ const UserDetail: NextPage = () => {
                                 sx={{m: -1}}
                             >
                                 <NextLink
-                                    href={`/users/${id}/edit`}
+                                    href={`/users/${queryId}/edit`}
                                     passHref
                                 >
                                     <Button
@@ -149,11 +156,15 @@ const UserDetail: NextPage = () => {
                         <Grid container spacing={3}>
                             <Grid item xs={12}>
                                 <UserBasicDetails
-                                    userId={user.userId}
-                                    username={user.userName}
-                                    name={user.name}
-                                    userRole={user.userRole}
+                                    userLoginId={user.userLoginId}
+                                    userName={user.userName}
+                                    userPhone={user.userPhone}
+                                    userEmail={user.userEmail}
                                     userSso={user.userSso}
+                                    positionName={user.positionName}
+                                    groupId={user.groupId}
+                                    roleId={user.roleId}
+                                    siteId={user.siteId}
                                 />
                             </Grid>
                         </Grid>

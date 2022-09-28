@@ -1,7 +1,7 @@
 import instance from "./index";
 import type { Site, SiteBase } from '../types/site';
 
-const path = '/site';
+const path = '/system/site';
 
 export interface Result<T = any> {
     code:number;

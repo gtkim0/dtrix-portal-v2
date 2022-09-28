@@ -11,6 +11,9 @@ import {SettingsConsumer} from "../contexts/settings-context";
 import {AuthProvider} from "../contexts/jwt-context";
 import {AuthConsumer} from "../contexts/jwt-context";
 import { CookiesProvider } from 'react-cookie';
+import { Toaster } from 'react-hot-toast';
+import {Provider} from "react-redux";
+import {store} from '../store/index';
 
 type EnhancedAppProps = AppProps & {
     Component: NextPage;
@@ -23,28 +26,32 @@ const App: FC<EnhancedAppProps> = (props: any) => {
     const getLayout = Component.getLayout ?? ((page: any) => page);
 
     return (
-        <AuthProvider>
-            <SettingsProvider>
-                <SettingsConsumer>
-                    {({settings}) => (
-                        <ThemeProvider theme={createTheme({
-                            direction: settings.direction,
-                            responsiveFontSizes: settings.responsiveFontSizes,
-                            mode: settings.theme
-                        })}>
-                            <CookiesProvider>
-                                <AuthConsumer>
-                                    {
-                                        (auth) =>
-                                            getLayout(<Component {...pageProps} />)
-                                    }
-                                </AuthConsumer>
-                            </CookiesProvider>
-                        </ThemeProvider>
-                    )}
-                </SettingsConsumer>
-            </SettingsProvider>
-        </AuthProvider>
+        <Provider store={store}>
+            <AuthProvider>
+                <SettingsProvider>
+                    <SettingsConsumer>
+                        {({settings}) => (
+                            <ThemeProvider theme={createTheme({
+                                direction: settings.direction,
+                                responsiveFontSizes: settings.responsiveFontSizes,
+                                mode: settings.theme
+                            })}
+                            >
+                                <CookiesProvider>
+                                    <Toaster position={"top-center"} />
+                                    <AuthConsumer>
+                                        {
+                                            (auth) =>
+                                                getLayout(<Component {...pageProps} />)
+                                        }
+                                    </AuthConsumer>
+                                </CookiesProvider>
+                            </ThemeProvider>
+                        )}
+                    </SettingsConsumer>
+                </SettingsProvider>
+            </AuthProvider>
+        </Provider>
     )
 }
 

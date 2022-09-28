@@ -1,46 +1,56 @@
 import instance from "./index";
-import { Result, Page } from "../types/common";
-import type { Group, GroupConfig, GroupItem, TreeNode } from '../types/group';
+import {Group, GroupBase} from '../types/group';
+import {User, UserBase} from "../types/user";
 
-const path = '/pc/groups';
+const path = '/user/groups';
+
+interface IGroupForm {
+    groupName:string,
+    groupDescription:string,
+    delYn:boolean
+}
+
+export interface Result<T = Group> {
+    code:number;
+    message?:string;
+    data:T;
+}
+
+export interface Page<T = any>{
+    total:number;
+    size:number;
+    page:number;
+    list:T[];
+}
 
 class GroupApi {
 
-    getGroupList(id: string): Promise<Result<GroupItem[]>> {
-        return instance.get<Result<GroupItem[]>, Result<GroupItem[]>>(`${path}/${id}/list`);
+    // 그룹 리스트 조회
+    getGroups(params?:any): Promise<Result<GroupBase[] | Page<Group>>> {
+        return instance.get<Result<GroupBase[] | Page<Group>>,Result<GroupBase[] | Page<Group>>>(path, {params});
     }
 
-    getTree(id: string): Promise<Result<TreeNode[]>> {
-        return instance.get<Result<TreeNode[]>, Result<TreeNode[]>>(`${path}/${id}/tree`);
+    // 그룹 상세정보
+    getGroup(groupId:any): Promise<Result<any>> {
+        return instance.get<Result<any>,Result<any>>(`${path}/${groupId}`);
     }
 
-    getChildGroups(id: string, params?: any): Promise<Result<Group[]>> {
-        return instance.get<Result<Group[]>, Result<Group[]>>(`${path}/${id}/child`, { params });
+    // 그룹 생성
+    createGroup (group:IGroupForm) : Promise<Result<Group>> {
+        return instance.post<Result<Group>,Result<Group>>(path, group);
     }
 
-    getRootGroupConfig(): Promise<Result<GroupConfig>> {
-        return instance.get<Result<GroupConfig>, Result<GroupConfig>>(`${path}/01/config`);
+    // 그룹정보 수정
+    updateGroup(groupId:string, group:Group): Promise<Result<Group>> {
+        return instance.put<Result<Group>,Result<Group>>(`${path}/${groupId}`,group);
     }
 
-    updateRootGroupConfig(config: GroupConfig): Promise<Result<GroupConfig>> {
-        return instance.put<Result<GroupConfig>, Result<GroupConfig>>(`${path}/01/config`, config);
+    // 그룹 삭제
+    deleteGroup(groupId:number): Promise<Result<Group>> {
+        return instance.delete<Result<Group>, Result<Group>>(`${path}/${groupId}`);
     }
 
-    getGroup(id: string): Promise<Result<Group>> {
-        return instance.get<Result<Group>, Result<Group>>(`${path}/${id}`);
-    }
 
-    createGroup(group: Group): Promise<Result<Group>> {
-        return instance.post<Result<Group>, Result<Group>>(path, group);
-    }
-
-    updateGroup(id: string, group: Group): Promise<Result<Group>> {
-        return instance.put<Result<Group>, Result<Group>>(`${path}/${id}`, group);
-    }
-
-    deleteGroup(id: string): Promise<Result<Group>> {
-        return instance.delete<Result<Group>, Result<Group>>(`${path}/${id}`);
-    }
 }
 
 export const groupApi = new GroupApi();

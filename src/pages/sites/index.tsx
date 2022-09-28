@@ -17,8 +17,8 @@ interface Filters {
 }
 
 type Sort =
-    | 'createAt-DESC'
-    | 'createAt-ASC';
+    | 'createdAt,DESC'
+    | 'createdAt,ASC';
 
 interface SortOption {
     value: Sort;
@@ -28,11 +28,11 @@ interface SortOption {
 const sortOptions: SortOption[] = [
     {
         label: '등록순 (newest)',
-        value: 'createAt-DESC'
+        value: 'createdAt,DESC'
     },
     {
         label: '등록순 (oldest)',
-        value: 'createAt-ASC'
+        value: 'createdAt,ASC'
     },
 ];
 
@@ -71,6 +71,7 @@ const Sites:NextPage = () => {
     const getSite = useCallback(async (params:any)=> {
         try {
             const result = await siteApi.getSites(params);
+            console.log(result);
             const {totalElements, content}:any = result.data;
             console.log(result);
             if(result.code ===200){
@@ -100,7 +101,7 @@ const Sites:NextPage = () => {
         const params = {
             page:page,
             size:size,
-            sortBy: sort
+            sort: sort,
         }
         getSite(params);
     },[page,size,sort])
@@ -109,11 +110,13 @@ const Sites:NextPage = () => {
         const params = {
             page:page,
             size:size,
-            sortBy: sort,
+            sort: sort,
             siteName: filters.siteName
         }
         getSearchSite(params);
     },[filters])
+
+    console.log(sites);
 
     return (
         <>

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect, useState} from 'react';
 import type {FC} from 'react';
 import {Site} from "../../types/site";
 import toast from 'react-hot-toast';
@@ -13,10 +13,12 @@ import {
     CardHeader, Checkbox,
     Divider,
     FormControlLabel, FormGroup,
-    Grid,
+    Grid, MenuItem,
     TextField
 } from "@mui/material";
 import {siteApi} from "../../apis/site-api";
+import {User} from "../../types/user";
+import {userApi} from "../../apis/user-api";
 
 interface ISiteEditFormProps {
     site: Site;
@@ -28,12 +30,12 @@ const SiteEditForm:FC<ISiteEditFormProps> = (props) => {
     const router = useRouter();
     const formik = useFormik({
         initialValues: {
-            id: null,
+            // id: null,
             siteId:site.siteId,
-            siteName: '',
-            siteDomain: '',
-            siteEnabled: true,
-            siteDefault:true,
+            siteName: site.siteName,
+            userName: site.userId,
+            siteDescription: site.siteDescription,
+            siteSso:site.siteSso,
             submit: null
         },
         validationSchema: Yup.object({
@@ -41,7 +43,7 @@ const SiteEditForm:FC<ISiteEditFormProps> = (props) => {
                 .string()
                 .max(255)
                 .required('아이디 is required'),
-            siteDomain: Yup
+            siteDescription: Yup
                 .string()
                 .max(255)
                 .required('domain is required'),
@@ -78,6 +80,26 @@ const SiteEditForm:FC<ISiteEditFormProps> = (props) => {
             console.error(err);
         }
     }
+
+    const [users, setUsers] = useState<User[]>([]);
+    const getUser =  async () => {
+        const params = {
+            page:0,
+            size:100
+        }
+        try {
+            const result =  await userApi.getUsers(params);
+            const {total, list}:any = result.data;
+            if(result){
+                setUsers(list);
+            }
+        }catch (err) {
+            console.error(err);
+        }
+    }
+    useEffect(()=> {
+        getUser();
+    },[])
 
     return (
         <form
@@ -116,15 +138,40 @@ const SiteEditForm:FC<ISiteEditFormProps> = (props) => {
                             xs={12}
                         >
                             <TextField
-                                error={Boolean(formik.touched.siteDomain && formik.errors.siteDomain)}
+                                error={Boolean(formik.touched.userName && formik.errors.userName)}
                                 fullWidth
-                                helperText={formik.touched.siteDomain && formik.errors.siteDomain}
-                                label="사이트도메인"
-                                name="siteDomain"
+                                helperText={formik.touched.userName && formik.errors.userName}
+                                label="관리자"
+                                name="userName"
+                                select
                                 onBlur={formik.handleBlur}
                                 onChange={formik.handleChange}
                                 required
-                                value={formik.values.siteDomain}
+                                value={formik.values.userName}
+                            >
+                                {
+                                    users.map((data)=> (
+                                        <MenuItem value={data.userId} key={data.userId}>{data.userName}</MenuItem>
+                                    ))
+                                }
+                            </TextField>
+                        </Grid>
+
+                        <Grid
+                            item
+                            md={12}
+                            xs={12}
+                        >
+                            <TextField
+                                error={Boolean(formik.touched.siteDescription && formik.errors.siteDescription)}
+                                fullWidth
+                                helperText={formik.touched.siteDescription && formik.errors.siteDescription}
+                                label="목적"
+                                name="siteDescription"
+                                onBlur={formik.handleBlur}
+                                onChange={formik.handleChange}
+                                required
+                                value={formik.values.siteDescription}
                             />
                         </Grid>
 
@@ -134,16 +181,7 @@ const SiteEditForm:FC<ISiteEditFormProps> = (props) => {
                             xs={12}
                         >
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox name={"siteEnabled"} checked={formik.values.siteEnabled} onChange={formik.handleChange} />} label={"사이트허용"}/>
-                            </FormGroup>
-                        </Grid>
-                        <Grid
-                            item
-                            md={6}
-                            xs={12}
-                        >
-                            <FormGroup>
-                                <FormControlLabel control={<Checkbox name={"siteDefault"} checked={formik.values.siteDefault} onChange={formik.handleChange} />} label={"사이트허용"}/>
+                                <FormControlLabel control={<Checkbox name={"siteSso"} checked={formik.values.siteSso} onChange={formik.handleChange} />} label={"Sso 사용 여부"}/>
                             </FormGroup>
                         </Grid>
                     </Grid>
