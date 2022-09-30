@@ -1,3 +1,7 @@
+@import 'tailwindcss/base';
+@import 'tailwindcss/components';
+@import 'tailwindcss/utilities';
+
 html,
 body {
   padding: 0;
@@ -34,29 +38,3 @@ a {
   align-items: center;
   justify-content: space-around;
 }
-/*.login_page .login_page_body {*/
-/*  height: calc(100vh - 50px);*/
-/*  background: #eaeaea;*/
-/*  display: flex;*/
-/*  justify-content: center;*/
-/*  align-items: center;*/
-/*}*/
-/*.login_page .login_page_form {*/
-/*  display: flex;*/
-/*  flex-direction: column;*/
-/*}*/
-/*.login_page label {*/
-/*  font-size: 20px;*/
-/*  font-weight: 700;*/
-/*  padding: 15px 0;*/
-/*}*/
-/*.login_page input {*/
-/*  width:200px;*/
-/*  height: 30px;*/
-/*  padding: 0 0 0 10px;*/
-/*}*/
-/*.login_page button {*/
-/*  width:50px;*/
-/*  position: relative;*/
-/*  margin-top: 10px;*/
-/*}*/

@@ -24,7 +24,7 @@ import Layout from "../../components/Layout/layout";
 import axios from "axios";
 import {userApi} from "../../apis/user-api";
 import { useAuth } from "../../hooks/use-auth";
-import {useGetUsersQuery} from "../../store/bulletinApliSlice";
+import { useGetUsersQuery } from "../../store/sliceApi/userApliSlice";
 
 type Sort =
     | 'createDate|desc'
@@ -60,16 +60,11 @@ interface Filters {
     user?: string;
 }
 
-const User: NextPage = () => {
+const UserPage: NextPage = () => {
     const userInfo = useAuth();
     console.log(userInfo);
     // const {userInfo} = userRoleInfo;
     const user = useAuth();
-
-    const {data, error,isLoading} = useGetUsersQuery('getUsers');
-    console.log("data",data);
-    console.log("error",error);
-    console.log("isLoading",isLoading);
 
 
 
@@ -81,6 +76,11 @@ const User: NextPage = () => {
     const [role, setRole] = useState<string>('');
     const [sort, setSort] = useState<Sort>(sortOptions[0].value);
     const queryRef = useRef<HTMLInputElement | null>(null);
+
+    // const {data:any, isLoading, isFetching, isError } = useGetUsersQuery(page,size, role,userRole:role);
+
+    // const {data:any, refetch} = useGetUsersQuery({page,size});
+    // console.log(data);
 
     const [filters, setFilters] = useState<Filters>({
         user: '',
@@ -112,9 +112,10 @@ const User: NextPage = () => {
     const getUsers = useCallback(async (params: any) => {
         try {
             const result = await userApi.getUsers(params);
-            console.log(result);
+            
             // @ts-ignore
             const {total, list} = result.data;
+            console.log(list);
             if (result) {
                 setTotal(total);
                 setUsers(list);
@@ -320,10 +321,10 @@ const User: NextPage = () => {
 }
 
 // @ts-ignore
-User.getLayout = (page) => (
+UserPage.getLayout = (page) => (
     <Layout>
         {page}
     </Layout>
 )
 
-export default User;
+export default UserPage;

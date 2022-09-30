@@ -1,4 +1,4 @@
-export const BASE_URL = '//192.168.0.48:8088'; // 142
+export const BASE_URL = '//192.168.0.40:8088'; // 142
 
 /* production */
 /* use web server reverse proxy */

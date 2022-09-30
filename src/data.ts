@@ -47,6 +47,14 @@ export let data1 = [
         "level": 1,
         "route":"/privilege"
     },
+    {
+        "id": "07",
+        "name":"권한 그룹 관리",
+        "type": "group",
+        "sort":1,
+        "level":1,
+        "route":"/privilegeGroup"
+    },
     // {
     //     "id":"05",
     //     "name":"board",

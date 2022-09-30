@@ -2,7 +2,7 @@ import React, {useCallback, useState, useEffect, useRef, MouseEvent, ChangeEvent
 import {NextPage} from "next";
 import Layout from "../../components/Layout/layout";
 import {privilegeApi} from "../../apis/privilege-api";
-import {Privilege} from "../../types/privilege";
+import {PrivilegeType} from "../../types/privilege";
 import Head from "next/head";
 import {
     Box,
@@ -37,7 +37,7 @@ const Privilege:NextPage = () => {
     const [total , setTotal] = useState<number>(0);
     const [size , setSize] = useState<number>(10);
     const [page , setPage] = useState<number>(0);
-    const [privileges, setPrivileges] = useState<Privilege[]>([]);
+    const [privileges, setPrivileges] = useState<PrivilegeType[]>([]);
     const {t} = useTranslation();
     const queryRef = useRef<HTMLInputElement | null>(null);
     const [filters, setFilters] = useState<Filters>({

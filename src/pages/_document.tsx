@@ -2,8 +2,11 @@ import { Children } from 'react';
 import Document, { Html, Head, Main, NextScript } from 'next/document';
 import createEmotionServer from '@emotion/server/create-instance';
 import { createEmotionCache } from '../utils/create-emotion-cache';
+import { ServerStyleSheet } from 'styled-components';
 
 class CustomDocument extends Document {
+
+
     render() {
         return (
             <Html lang="ko">
@@ -67,7 +70,6 @@ CustomDocument.getInitialProps = async (ctx) => {
     ctx.renderPage = () => originalRenderPage({
         enhanceApp: (App) => (props) => (
             <App
-                // @ts-ignore
                 emotionCache={cache}
                 {...props}
             />

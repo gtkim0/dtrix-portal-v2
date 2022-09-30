@@ -1,8 +1,9 @@
 import instance from './index';
-import type { Privilege, PrivilegeBase} from "../types/privilege";
+import type { PrivilegeType, PrivilegeBase} from "../types/privilege";
 import {Group} from "../types/group";
 
 const path = '/user/privilege'
+// const path = '/user/privilege/users'
 
 export interface Result<T = any> {
     code:number;
@@ -12,7 +13,16 @@ export interface Result<T = any> {
 
 export interface IPrivilegeForm {
     privilegeName:string,
-    delYn:boolean
+    delYn:boolean,
+    createdAt: number,
+    modifiedAt: number,
+    privilegeId: number
+}
+
+export interface IPrivilegeDataProps {
+    privilegeId: number,
+    privilegeName : string,
+
 }
 
 class PrivilegeApi {
@@ -25,16 +35,16 @@ class PrivilegeApi {
         return instance.get<Result<any>,Result<any>>(`${path}/${privilegeId}`);
     }
 
-    createPrivilege (privilege:IPrivilegeForm) : Promise<Result<Privilege>> {
-        return instance.post<Result<Privilege>,Result<Privilege>>(path, privilege);
+    createPrivilege (privilege:any) : Promise<Result<PrivilegeType>> {
+        return instance.post<Result<PrivilegeType>,Result<PrivilegeType>>(path, privilege);
     }
 
-    updatePrivilege (privilegeId:number,privilege:Privilege) : Promise<Result<Privilege>> {
-        return instance.put<Result<Privilege>,Result<Privilege>>(`${path}/${privilegeId}`,privilege);
+    updatePrivilege (privilegeId:number,privilege:PrivilegeType) : Promise<Result<PrivilegeType>> {
+        return instance.put<Result<PrivilegeType>,Result<PrivilegeType>>(`${path}/${privilegeId}`,privilege);
     }
     // 그룹 삭제
-    deletePrivilege (privilegeId:number): Promise<Result<Privilege>> {
-        return instance.delete<Result<Privilege>, Result<Privilege>>(`${path}/${privilegeId}`);
+    deletePrivilege (privilegeId:number): Promise<Result<PrivilegeType>> {
+        return instance.delete<Result<PrivilegeType>, Result<PrivilegeType>>(`${path}/${privilegeId}`);
     }
 
 }

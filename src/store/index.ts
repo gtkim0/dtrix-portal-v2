@@ -1,6 +1,6 @@
 import {configureStore} from "@reduxjs/toolkit";
 import {setupListeners} from "@reduxjs/toolkit/query";
-import {userApi} from "./bulletinApliSlice";
+import {userApi} from "./sliceApi/userApliSlice";
 
 export const store = configureStore({
     reducer: {

@@ -75,9 +75,6 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
 
             userPhone: Yup
                 .string().matches(phoneRegExp,'phone number is not valid'),
-            userEmail : Yup
-                .string()
-                .email(),
             siteId : Yup
                 .string()
                 .required("site is required")
@@ -202,7 +199,6 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     name="userPhone"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    required
                                     value={formik.values.userPhone}
                                 />
                             </Grid>
@@ -219,7 +215,6 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     name="userEmail"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    required
                                     value={formik.values.userEmail}
                                 />
                             </Grid>
@@ -236,7 +231,6 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     name="positionName"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
-                                    required
                                     value={formik.values.positionName}
                                 />
                             </Grid>
@@ -269,7 +263,6 @@ const UserCreateForm: FC<IUserCreateFormProps> = (props) => {
                                     select
                                     label="사이트명"
                                     fullWidth
-                                    required
                                     name={"siteId"}
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}

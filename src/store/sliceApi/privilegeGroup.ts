@@ -21,26 +21,40 @@ const baseQueryWithIntercept: BaseQueryFn<string | FetchArgs, unknown, FetchBase
     return result;
 };
 
-export const userApi = createApi({
-    reducerPath: 'userApi',
+export const privilegeGroupApi = createApi({
+    reducerPath: 'privilegeGroupApi',
     baseQuery: baseQueryWithIntercept,
     endpoints: (builder) => ({
-      getUsers : builder.query<any,any>({
-          query: () => ({
-              url:"user/users",
-              method:'get',
-              params:{
-                  page:0,
-                  size:10,
-                  userRole:"",
-                  user:""
+      getPrivilege: builder.query({
+          query: ({page,size}) => ({
+              url:`user/users`,
+              method:'GET',
+              params: {
+                  page,
+                  size
               }
+          }),
+          transformResponse: (response: any) => {
+              console.log(response);
+              return response;
+          }
+      }),
+
+      getUser: builder.query({
+          query:(id) => ({
+              url:`user/users/${id}`,
+              method:'GET',
           })
-      })
+      }),
+      // createUser: builder.mutation<any,any>({
+      //     query (data) {
+      //
+      //     }
+      // })
     })
 })
 
-export const { useGetUsersQuery } = userApi;
+export const { useGetPrivilegeQuery } = privilegeGroupApi;
 
 
 //get 방식은 query 고 post 방식은 mutation 이 붙나봄
