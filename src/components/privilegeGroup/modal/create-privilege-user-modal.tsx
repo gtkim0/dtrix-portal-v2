@@ -1,27 +1,27 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import type { FC } from 'react';
 import { Dialog, DialogTitle, DialogContent, Paper, PaperProps } from '@mui/material';
 import Draggable from 'react-draggable';
 import Pagination from 'react-js-pagination';
 import styled from 'styled-components'
 import CloseIcon from '@mui/icons-material/Close';
+import {userApi} from "../../../apis/user-api";
+import type {User} from '../../../types/user';
+import { privilegeUserDetailApi } from '../../../apis/privilege-group-detail';
 interface ICreatePrivilegeUserModalProps {
     modalOpen :boolean;
     handleClose :any;
+    detailPrivilegeId :any;
 }
 
 const CreatePrivilegeUserModal: FC<ICreatePrivilegeUserModalProps> = (props) => {
 
-    const {modalOpen, handleClose} = props;
+    const {modalOpen, handleClose, detailPrivilegeId} = props;
     const [open, setOpen] = useState(false);
- 
-
-    const [paging, setPaging] = useState({
-        page:0,
-        size:10,
-        total:0
-    })
-
+    const [users, setUsers] = useState<User[]>([]);
+    const [total, setTotal] = useState<number>(0);
+    const [size, setSize] = useState<number>(10);
+    const [page, setPage] = useState<number>(0);
 
     const [allCheckStatus, setAllCheckStatus] = useState<boolean>(false);
     const [selectedList, setSelectedList] = useState<number[]>([]);
@@ -58,17 +58,76 @@ const CreatePrivilegeUserModal: FC<ICreatePrivilegeUserModalProps> = (props) => 
         // })
     }
 
+    const getUsers = useCallback(async (params: any) => {
+        try {
+            const result = await userApi.getUsers(params);
+            
+            // @ts-ignore
+            const {total, list} = result.data;
+            console.log(list);
+            if (result) {
+                setTotal(total);
+                setUsers(list);
+            }
+        } catch (err) {
+            console.error(err);
+        }
+    }, [])
+
+    const handleAddPrivilege = async () => {
+        if(selectedList.length === 0) {
+            alert("추가할 유저를 선택하세요");
+        }
+        let list:any = [];
+        selectedList.map((data)=> {
+            list.push({
+                userId : data,
+                privilegeId : detailPrivilegeId
+            })
+        })
+
+        privil(list);
+    }
+
+    const privil = async (list:any) => {
+        const params = {
+            page:page,
+            size:size
+        }
+
+
+        try {
+            const result = await privilegeUserDetailApi.createPrivilegeUsers(list);
+            setSelectedList([]);
+            handleClose();
+            
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    useEffect(() => {
+        const params = {
+            page: page,
+            size: size,
+            // TODO 아직 구현 안된상황, 정렬부분이랑 사이트 네임부분 구현필요
+        }
+        getUsers(params);
+    }, [page, size])
+
     useEffect(()=> {
         if(allCheckStatus) {
             let list:number[] = [];
-            dummyData.map((data)=> {
-                list.push(data.id);
+            users.map((data)=> {
+                list.push(data.userId);
             })
             setSelectedList([...list]);
         }else{
             setSelectedList([]);
         }
     },[allCheckStatus])
+
+
 
     return (
         <>
@@ -80,32 +139,35 @@ const CreatePrivilegeUserModal: FC<ICreatePrivilegeUserModalProps> = (props) => 
                     PaperComponent={PaperComponent}
                     maxWidth="lg"
                 >
-                    <div className="p-5 bg-gray-200 flex flex-col" id="draggable-dialog-title">
+                    <div className="p-5 bg-gray-100 flex flex-col" id="draggable-dialog-title">
                         <div>
+                            <button onClick={handleAddPrivilege} className="px-2 py-2 bg-gray-400 text-white float-left">
+                                선택
+                            </button>
                             <button onClick={handleClose} className='px-2 py-2 mb-2 bg-gray-700 text-white float-right'>
                                 <CloseIcon />
                             </button>
                         </div>
                         <div>
-                            <table className="border-collapse border-2">
+                            <table className="border-dash border-separate">
                                 <thead>
-                                    <tr className="bg-gray-300 border-2">
-                                        <td className="p-2 border-2 text-center"><input type="checkbox" checked={allCheckStatus} onChange={handleAllChange} /></td>
-                                        <td className="p-2 border-2 w-60 text-center">번호</td>
-                                        <td className="p-2 border-2 w-60 text-center">권한</td>
-                                        <td className="p-2 border-2 w-60 text-center">직급</td>
-                                        <td className="p-2 border-2 w-60 text-center">사용여부</td>
+                                    <tr className="bg-gray-300 border-1">
+                                        <th className="p-2 border-2 text-center"><input type="checkbox" checked={allCheckStatus} onChange={handleAllChange} /></th>
+                                        <th className="p-2 border-2 w-60 text-center">아이디</th>
+                                        <th className="p-2 border-2 w-60 text-center">이름</th>
+                                        <th className="p-2 border-2 w-60 text-center">권한</th>
+                                        <th className="p-2 border-2 w-60 text-center">직급</th>
                                     </tr>
                                 </thead>
-                                <tbody>
+                                <tbody className=" border-gray-700">
                                     {
-                                        dummyData.map((data:any) => (
-                                            <tr key={data.id} className="border-2">
-                                                <td className="p-2 border-2 text-center"><input type="checkbox" onChange={(e)=>handleCheckChange(e,data.id)} checked={selectedList.includes(data.id)} /></td>
-                                                <td className="p-2 border-2 text-center">{data.id}</td>
-                                                <td className="p-2 border-2 text-center">{data.no}</td>
-                                                <td className="p-2 border-2 text-center">{data.a}</td>
-                                                <td className="p-2 border-2 text-center">{data.b}</td>
+                                        users.map((data:any) => (
+                                            <tr key={data.userId} className="border-2">
+                                                <td className="p-2 border-1 text-center"><input type="checkbox" onChange={(e)=>handleCheckChange(e,data.userId)} checked={selectedList.includes(data.userId)} /></td>
+                                                <td className="p-2 border-1 text-center">{data.userId}</td>
+                                                <td className="p-2 border-1 text-center">{data.userName}</td>
+                                                <td className="p-2 border-1 text-center">{data.roleName}</td>
+                                                <td className="p-2 border-1 text-center">{data.positionName}</td>
                                             </tr>
                                         ))
                                     }

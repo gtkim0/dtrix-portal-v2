@@ -99,6 +99,11 @@ const PrivilegeGroup = () => {
         getAutority(params);
     }
 
+    
+    const handleGetPrivilegeDeatil = () => {
+
+    }
+
     useEffect(()=> {
         const params = {
             page: page,
@@ -139,7 +144,7 @@ const PrivilegeGroup = () => {
                 }
             </div>
             {
-                <CreatePrivilegeUserModal modalOpen={createModalOpen} handleClose={handleClose} />
+                <CreatePrivilegeUserModal detailPrivilegeId={detailPrivilegeId} modalOpen={createModalOpen} handleClose={handleClose} />
             }
             
         </>
