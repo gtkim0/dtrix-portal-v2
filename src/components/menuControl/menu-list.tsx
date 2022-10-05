@@ -8,6 +8,7 @@ import MenuEditModal from './modal/menuEditModal';
 import MenuDeleteModal from './modal/menuDeleteModal';
 import { menuApi } from '../../apis/menu-api';
 import { toast } from 'react-hot-toast';
+import {MenuType} from '../../types/menu';
 
 interface IMenuListTableProps {
 
@@ -66,17 +67,8 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
     // 삭제 modal state
     const [deleteOpen,setDeleteOpen] = useState(false);
     const [deleteMenu,setDeleteMenu] = useState<any>();
+    const [currentPage, setCurrentPage] = useState<number>(0);
 
-
-    const [filter,setFilter] = useState({
-        page:1,
-        limits:10,
-        total:0,
-    })
-
-    const {page,limits,total} = filter;
-
-    
     // 메뉴 리스트
     const [menuList,setMenuList] = useState<any>();
 
@@ -99,23 +91,25 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
     }
 
     
-    // 데이터 fetch 함수
-
     //TODO 메뉴불러오는 api 적용해야함.
-    const getMenuList = async() => {
-        // try {
-        //     const result = await menuApi.getMenus();
-        //     setMenuList(result);
-        // }catch(err:any){
-        //     toast.error(err);
-        // }
+    const getMenuList = async({siteId,currentPage}:any) => {
+        try {
+            // TODO site_id 현재 하드코딩 , 추후 변경필요
+            const result:any = await menuApi.getMenus({site_id:1,currentPage});
+            setMenuList(result.menuMngList);
+        }catch(err:any){
+            toast.error(err);
+        }
     }
 
     useEffect(()=> {
-        getMenuList();
-    },[page,limits,total])
+        getMenuList({site_id:1,currentPage:currentPage});
+    },[currentPage])
     
-
+    
+    if(!menuList) {
+        return <></>
+    }
 
     return (
         <>
@@ -124,16 +118,16 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
                     <TableHead>
                         <TableRow sx={{ background: 'lightGray' }}>
                             <TableCell sx={{ pl: 4, }}>
-                                No
+                                메뉴 아이디
                             </TableCell>
                             <StyledTableCell>
-                                메뉴명
+                                메뉴 이름
                             </StyledTableCell>
                             <StyledTableCell>
                                 상위 메뉴
                             </StyledTableCell>
                             <StyledTableCell>
-                                사용여부
+                                메뉴 설명
                             </StyledTableCell>
                             <StyledTableCell>
                                 public
@@ -147,24 +141,19 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {dummyData.map((menu) => (
+                        {menuList.map((menu:MenuType) => (
                             <TableRow
                                 hover
-                                key={menu.id}
+                                key={menu.menuId}
                             >
                                 <TableCell sx={{ pl: 5, width: "20%" }}>
-                                    <NextLink href={`/menu/${menu.id}`}>
+                                    <NextLink href={`/menu/${menu.menuId}`}>
                                         <Link>
                                             <Typography sx={{ cursor: 'pointer' }}>
-                                                {menu.id}
+                                                {menu.menuId}
                                             </Typography>
                                         </Link>
                                     </NextLink>
-                                </TableCell>
-                                <TableCell>
-                                    <StyledTypography>
-                                        {menu.parentMenu}
-                                    </StyledTypography>
                                 </TableCell>
                                 <TableCell>
                                     <StyledTypography>
@@ -172,19 +161,24 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
                                     </StyledTypography>
                                 </TableCell>
                                 <TableCell>
-                                    <FormGroup >
-                                        <FormControlLabel sx={{ justifyContent: "center", margin: '0 auto' }} control={<Checkbox disabled sx={{ cursor: 'text' }} checked={menu.public && true} onChange={() => { }} />} label={""} />
-                                    </FormGroup>
+                                    <StyledTypography>
+                                        {menu.upMenuId}
+                                    </StyledTypography>
+                                </TableCell>
+                                <TableCell>
+                                    <StyledTypography>
+                                        {menu.menuComment}
+                                    </StyledTypography>
                                 </TableCell>
                                 <TableCell>
                                     <FormGroup>
-                                        <FormControlLabel sx={{ justifyContent: "center", margin: '0 auto' }} control={<Checkbox disabled sx={{ cursor: 'text' }} checked={menu.use && false} onChange={() => { }} />} label={""} />
+                                        <FormControlLabel sx={{ justifyContent: "center", margin: '0 auto' }} control={<Checkbox disabled sx={{ cursor: 'text' }} checked={ menu.publicYn===""? false : true && false} onChange={() => { }} />} label={""} />
                                     </FormGroup>
                                 </TableCell>
-                                <TableCell sx={{display:'flex', justifyContent:'center'}}>
+                                <TableCell sx={{textAlign:'center'}}>
                                     <Button onClick={handleEditOpen}>수정</Button>
                                 </TableCell>
-                                <TableCell>
+                                <TableCell sx={{textAlign:'center'}}>
                                     <Button  onClick={()=>handleDeleteOpen(menu)}>삭제</Button>
                                 </TableCell>
                             </TableRow>

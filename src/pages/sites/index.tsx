@@ -101,7 +101,7 @@ const Sites:NextPage = () => {
         const params = {
             page:page,
             size:size,
-            sort: sort,
+            // sort: sort,
         }
         getSite(params);
     },[page,size,sort])
@@ -110,7 +110,7 @@ const Sites:NextPage = () => {
         const params = {
             page:page,
             size:size,
-            sort: sort,
+            // sort: sort,
             siteName: filters.siteName
         }
         getSearchSite(params);

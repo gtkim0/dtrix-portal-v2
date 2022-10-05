@@ -6,14 +6,17 @@ import {PropertyListItem} from "../property-list-item";
 interface IUserBasicDetailProps {
     siteId: number;
     siteName: string;
-    siteDomain: string;
+    siteDescription: string;
     siteEnabled:boolean;
     siteDefault:boolean;
+    userName:string;
+    modifiedAt:string;
+    siteSso:boolean;
 }
 
 const SiteBasicDetail:FC<IUserBasicDetailProps> = (props) => {
 
-    const {siteId,siteName,siteDomain,siteEnabled,siteDefault,...rest} = props;
+    const {siteId,siteName,siteDescription,siteEnabled,siteDefault,userName,modifiedAt,siteSso,...rest} = props;
 
     const align =  'horizontal' ;
     return (
@@ -37,20 +40,32 @@ const SiteBasicDetail:FC<IUserBasicDetailProps> = (props) => {
                     <PropertyListItem
                         align={align}
                         divider
-                        label="domain"
-                        value={siteDomain}
+                        label="설명"
+                        value={siteDescription}
                     />
                     <PropertyListItem
                         align={align}
                         divider
-                        label="활성화"
+                        label="관리자"
+                        value={userName ? userName: "없음"}
+                    />
+                    <PropertyListItem
+                        align={align}
+                        divider
+                        label="SSO 여부"
+                        value={siteSso ? "Y": "N"}
+                    />
+                    <PropertyListItem
+                        align={align}
+                        divider
+                        label="사용여부"
                         value={siteEnabled ? "Y": "N"}
                     />
                     <PropertyListItem
                         align={align}
                         divider
-                        label="기본값"
-                        value={siteDefault ? "Y": "N"}
+                        label="최근수정일자"
+                        value={modifiedAt?.slice(0,10)}
                     />
                 </PropertyList>
                 <CardActions

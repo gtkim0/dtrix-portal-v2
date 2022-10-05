@@ -6,7 +6,7 @@ import {siteApi} from "../../../apis/site-api";
 import Head from "next/head";
 import Layout from "../../../components/Layout/layout";
 import Sites from "../index";
-import {Avatar, Box, Button, Chip, Container, Divider, Grid, Link, Typography} from "@mui/material";
+import {Avatar, Box, Button, Chip, Container, Divider, Grid, Link, stepIconClasses, Typography} from "@mui/material";
 import NextLink from "next/link";
 import ArrowBackIcon from "@mui/icons-material/ArrowBack";
 import {getInitials} from "../../../utils/get-initials";
@@ -14,6 +14,8 @@ import {PencilAlt as PencilAltIcon} from "../../../icons/pencil-alt";
 import UserBasicDetails from "../../../components/users/user-basic-detail";
 import SiteBasicDetail from "../../../components/sites/site-basic-detail";
 import toast from "react-hot-toast";
+import SiteServiceDetail from '../../../components/sites/site-service-detail';
+import SiteDbDetail from '../../../components/sites/site-db-detail';
 
 
 const SiteDetail:NextPage = () => {
@@ -39,6 +41,8 @@ const SiteDetail:NextPage = () => {
         return null;
     }
 
+    console.log(site);
+
     return (
         <>
             <Head>
@@ -50,10 +54,10 @@ const SiteDetail:NextPage = () => {
                 component="main"
                 sx={{
                     flexGrow:1,
-                    py:8
+                    py:3
                 }}
             >
-                <Container maxWidth="md">
+                <Container maxWidth="lg">
                     <div>
                         <Box sx={{mb: 4}}>
                             <NextLink
@@ -88,7 +92,8 @@ const SiteDetail:NextPage = () => {
                                 sx={{
                                     alignItems: 'center',
                                     display: 'flex',
-                                    overflow: 'hidden'
+                                    overflow: 'hidden',
+                                    p:3
                                 }}
                             >
                                 <div>
@@ -139,10 +144,33 @@ const SiteDetail:NextPage = () => {
                                 <SiteBasicDetail
                                     siteId={site.siteId}
                                     siteName={site.siteName}
-                                    siteDomain={site.siteDomain}
+                                    siteDescription={site.siteDescription}
+                                    userName={site.userName}
                                     siteEnabled={site.siteEnabled}
                                     siteDefault={site.siteDefault}
+                                    modifiedAt={site.modifiedAt}
+                                    siteSso={site.siteSso}
                                 />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    <Divider />
+
+                    <Box sx={{mt:3}}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <SiteServiceDetail />
+                            </Grid>
+                        </Grid>
+                    </Box>
+
+                    <Divider />
+
+                    <Box sx={{mt:3}}>
+                        <Grid container spacing={3}>
+                            <Grid item xs={12}>
+                                <SiteDbDetail />
                             </Grid>
                         </Grid>
                     </Box>

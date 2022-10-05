@@ -48,8 +48,9 @@ interface PrivilegeGroupTableListProps {
 
 const PrivilegeGroupTableList:FC<PrivilegeGroupTableListProps> = (props) => {
 
-    const {page, size, total, dataList ,onPageChange , successCallback, detailPrivilegeCheck , onSizeChange,onCallbackId,onCloseDetailPrivilege, checkSelectedListLength} = props;
  
+    const {page, size, total, dataList ,onPageChange , successCallback, detailPrivilegeCheck , onSizeChange,onCallbackId,onCloseDetailPrivilege, checkSelectedListLength} = props;
+    console.log(dataList);
     const [selectedList, setSelectedList] = useState<number[]>([]);
     const [allCheckStatus, setAllCheckStatus] = useState<boolean>(false);
     const [addCheck,setAddCheck] = useState<boolean>(false);

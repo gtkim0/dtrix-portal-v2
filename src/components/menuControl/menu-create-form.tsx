@@ -1,4 +1,4 @@
-import React, {useState, useEffect} from 'react';
+import React, {useState, useEffect, useCallback} from 'react';
 import type {FC} from 'react';
 import {
     Box,
@@ -17,6 +17,9 @@ import {
 import {useFormik} from "formik";
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader/CardHeader';
+import { menuApi } from '../../apis/menu-api';
+import { privilegeApi } from '../../apis/privilege-api';
+import {MenuType} from '../../types/menu';
 
 
 interface IMenuCreateFormProps {
@@ -31,18 +34,12 @@ const MenuCreateForm:FC<IMenuCreateFormProps> = (props) => {
 
     const [inputValue,setInputValue] = useState<string>('');
 
-    const options1 = ["1",'2',"3","4","5"];
-    const options2 = ["1",'2',"3","4","5"];
-
-
-
     const formik = useFormik({
         initialValues: {
             menuName:'',        //메뉴 이름
             parentMenu:0,       //상위 메뉴
             menuSort:'',        //메뉴 정렬 
-            menuAuthority:'',   //권한 설정
-            
+            menuAuthority:"0",   //권한 설정
             none:false,
             board:'',
             dashboard:'',
@@ -74,6 +71,61 @@ const MenuCreateForm:FC<IMenuCreateFormProps> = (props) => {
         // 상위 메뉴리스트 목록 불러올 api
 
     },[])
+
+
+    // 메뉴 생성시, 상위 메뉴리스트 불러오는 api
+    const getMenuList = async() => {
+        try {
+            // await const result = menuApi.
+        } catch (err) {
+            console.error(err);
+        }
+    }
+
+    const [page,setPage] = useState(0);
+    const [size,setSize] = useState(100);
+    const [privilege,setPrivilege] = useState<any>();
+    const [upMenuList,setUpMenuList] = useState<any>([]);
+
+    // 권한 그룹 불러오는 api
+    const getPrivileges = async({page,size}:any) => {
+        try {
+            const result = await privilegeApi.getPrivileges({page:page,size:size});
+            let namePrivilege:String[] = [];
+            if(result){
+                result.data.list.map((data:any)=> {
+                    namePrivilege.push(data);
+                })
+            }
+            setPrivilege(namePrivilege);
+        } catch (err) {
+            
+        }
+    }
+
+    // 페이징 없이 메뉴 리스트 불러오는 api
+    const getSideMenus = useCallback(async()=> {
+        const site_id = 1;
+        try {
+            const result = await menuApi.getSideMenus({site_id:site_id});
+            setUpMenuList(result);
+        } catch(err) {
+
+        }
+    },[])
+
+    useEffect(()=> {
+        getSideMenus();
+    },[])
+
+    useEffect(()=> {
+        getPrivileges({page,size})
+    },[page,size])
+
+
+    if(!privilege) {
+        return <></>;
+    }
 
     return (
         <>
@@ -189,10 +241,10 @@ const MenuCreateForm:FC<IMenuCreateFormProps> = (props) => {
                                 md={10}
                                 xs={12}
                             >
-                                <Autocomplete
+                                {/* <Autocomplete
                                     value={formik.values.menuAuthority}
                                     onChange={formik.handleChange}
-                                    options={options1}
+                                    options={privilege}
                                     onInputChange={(e,newInputValue)=> {
                                         setInputValue(newInputValue);
                                     }}
@@ -202,37 +254,30 @@ const MenuCreateForm:FC<IMenuCreateFormProps> = (props) => {
                                     renderInput={(params)=>
                                         <TextField {...params} label={"그룹 추가"} />
                                     }
-                                />
-
-                                <Autocomplete
-                                    value={formik.values.menuAuthority}
+                                /> */}
+                                <TextField
+                                    select
+                                    name="menuAuthority"
                                     onChange={formik.handleChange}
-                                    options={options2}
-                                    onInputChange={(e,newInputValue)=> {
-                                        setInputValue(newInputValue);
-                                    }}
-
-                                    inputValue={inputValue}
-                                    sx={{width:250,ml:3}}
-                                    renderInput={(params)=>
-                                        <TextField {...params} label={"사용자 추가"} />
-                                    }
-                                />
-
-
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.menuAuthority}
+                                    sx={{width:250}}
+                                >
+                                    <MenuItem key="0" value="0">전체</MenuItem>
+                                    {privilege.map((data:any)=>(
+                                        <MenuItem value={data.privilegeId} key={data.privilegeId}>{data.privilegeName}</MenuItem>
+                                    ))}
                                 
-                            </Grid>
+                                </TextField>
 
+
+                            </Grid>
                             <Grid
                                 item
                                 md={12}
                                 xs={12}
                             >
-
-
                             </Grid>
-
-
                             <Grid
                                 item
                                 md={2}

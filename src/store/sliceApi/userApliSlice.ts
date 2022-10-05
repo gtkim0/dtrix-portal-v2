@@ -2,7 +2,7 @@ import {BaseQueryFn, createApi, FetchArgs, fetchBaseQuery, FetchBaseQueryError} 
 // import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/dist/query';
 
 const baseQuery = fetchBaseQuery({
-    baseUrl: 'http://192.168.0.48:8088/',
+    baseUrl: 'http://192.168.0.40:8088/',
     prepareHeaders: (headers, {getState}) => {
         const accessToken = window.localStorage.getItem("accessToken");
         if(accessToken) {
