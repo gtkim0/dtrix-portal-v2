@@ -1,13 +1,12 @@
 import type { FC } from 'react';
 import { Card, CardActions, CardHeader, Divider,
     Table,TableHead,TableRow, TableCell, TableBody, styled } from "@mui/material";
+import {Application} from '../../types/application';
+
 
 interface ISiteServiceDetail {
-    // siteId: number;
-    // siteName: string;
-    // siteDomain: string;
-    // siteEnabled:boolean;
-    // siteDefault:boolean;
+    relation : Application[]
+    siteId: number;
 }
 
 const StyledTableCell = styled(TableCell)({
@@ -18,6 +17,12 @@ const StyledTableCell = styled(TableCell)({
 
 const SiteServiceDetail: FC<ISiteServiceDetail> = (props) => {
 
+    const {relation} = props;
+
+    console.log(relation);
+    if(!relation) {
+        return <></>
+    }
     return (
         <>
             <Card>
@@ -33,12 +38,21 @@ const SiteServiceDetail: FC<ISiteServiceDetail> = (props) => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        <TableRow>
-                            {/* <TableCell></TableCell> */}
+                        {
+                            relation.map((data:any)=> (
+                                <TableRow key={data.applicationid}>
+                                    <StyledTableCell>{data.applicationName}</StyledTableCell>
+                                    <StyledTableCell>{data.applicationName}</StyledTableCell>
+                                    <StyledTableCell>{data.applicationName}</StyledTableCell>
+                                </TableRow>
+                            ))
+                        }
+
+                        {/* <TableRow>
                             <StyledTableCell>1</StyledTableCell>
                             <StyledTableCell>2</StyledTableCell>
                             <StyledTableCell>3</StyledTableCell>
-                        </TableRow>
+                        </TableRow> */}
                     </TableBody>
                 </Table>
 

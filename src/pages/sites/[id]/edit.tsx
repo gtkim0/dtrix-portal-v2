@@ -10,11 +10,14 @@ import {getInitials} from "../../../utils/get-initials";
 import {Site} from "../../../types/site";
 import SiteEditForm from "../../../components/sites/site-edit-form";
 import {siteApi} from "../../../apis/site-api";
-
+import { applicationApi } from '../../../apis/application-api';
+import { relationApi } from '../../../apis/relation-api';
 
 const SiteEdit :NextPage = () => {
     const router = useRouter();
     const [site,setSite] = useState<Site | null>(null);
+    const [applicationList,setApplicationList] = useState<any>();
+    const [relationList,setRelationList] = useState<any>();
 
     const getSite = useCallback(async ()=> {
         try {
@@ -26,9 +29,36 @@ const SiteEdit :NextPage = () => {
         }
     },[])
 
+    const getApplication = useCallback(async(siteId:number) => {
+        try {
+            const result = await applicationApi.getApplications({page:0,size:100});
+            setApplicationList(result.data);
+        } catch(err:any) {
+            // toast.error(err);
+        }
+    },[])
+
+    const getRelation = useCallback(async(siteId:number) => {
+        try {
+            const result:any = await relationApi.getSiteRelation({siteId:siteId});
+            setRelationList(result.data);
+        } catch (err:any){
+
+        }
+    },[])
+
+    useEffect(()=> {
+        if(router.query.id && Number(router.query.id) !==0) {
+            getApplication(Number(router.query.id));
+            getRelation(Number(router.query.id));
+        }
+    },[])
+
     useEffect(()=> {
         getSite();
     },[])
+
+    // 사이트 정보랑 구독정보 가져와야함.
 
     if(!site){
         return null;
@@ -49,7 +79,7 @@ const SiteEdit :NextPage = () => {
                     py: 8
                 }}
             >
-                <Container maxWidth="md">
+                <Container maxWidth="lg">
                     <Box sx={{mb: 4}}>
                         <NextLink
                             href="/sites"
@@ -108,7 +138,7 @@ const SiteEdit :NextPage = () => {
                         </div>
                     </Box>
                     <Box mt={3}>
-                        <SiteEditForm site={site}/>
+                        <SiteEditForm site={site} applicationList={applicationList} relationList={relationList}/>
                     </Box>
                 </Container>
             </Box>

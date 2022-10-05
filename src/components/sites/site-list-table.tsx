@@ -75,7 +75,7 @@ const SiteListTable:FC<ISiteListTable> = (props) => {
                                 </TableCell>
                                 <TableCell>
                                     <Typography sx={{textAlign:'center'}}>
-                                        {site.userName}
+                                        {site.userName ?? "관리자 없음"}
                                     </Typography>
                                 </TableCell>
                                 <TableCell>

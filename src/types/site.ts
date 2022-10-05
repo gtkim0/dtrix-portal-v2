@@ -4,13 +4,13 @@ export interface SiteBase {
 
 export interface Site extends SiteBase {
     siteId: number;
-    siteName:string,
-    userName:string,  //관리자
-    siteSso:boolean,
+    siteName?:string,
+    userName?:string,  //관리자
+    siteSso?:boolean,
 
 
     userId:number,
-    siteDescription:string,
+    siteDescription?:string,
     board:boolean,
     dashboard:boolean,
     dbDriver:string,

@@ -19,54 +19,72 @@ import { useFormik } from "formik";
 import { siteApi } from "../../apis/site-api";
 import { userApi } from "../../apis/user-api";
 import { User } from "../../types/user";
-
+import {applicationApi} from "../../apis/application-api";
+import {Application} from '../../types/application';
+import { relationApi } from '../../apis/relation-api';
 interface ISiteCreateFormProps {
 
 }
 
 const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
-    const userList = ["test1", "user1", "serach1"]
     const router = useRouter();
     const [admin, setAdmin] = useState<string | null>()
-    const [dbValue, setDbValue] = useState<any>('postgre');
     const [users, setUsers] = useState<User[]>([]);
-
+    const [applications,setApplications] = useState<Application[]>([]);
     const [allChecked, setAllChecked] = useState<boolean>(false);
     const [selectedCheckList, setSelectedCheckList] = useState<number[]>([]);
+
+    const [siteName,setSiteName] = useState<string>('');
+
+    const [nameOverlapCheck,setNameOverlapCheck] = useState(false);
+
+
+    const [page, setPage] = useState<number>(0);
+    const [size, setSize] = useState<number>(10);
 
     const formik = useFormik({
         initialValues: {
             siteName: '',
-            userName: '',
+            userId: '',
             siteDescription: '',
             siteSso: false,
-            siteEnabled: false,
+            // delYn: false,
             // board:false,
             // dashboard:false,
-            // dbDriver:'',
+            // dbDriver:'postgre',
             // dbUrl:'',
             // dbUser:'',
             // dbPassword:''
         },
         validationSchema: Yup.object({
-            // siteName: Yup
-            //     .string()
-            //     .max(255)
-            //     .required('이름 is required'),
-            // siteDomain: Yup
-            //     .string()
-            //     .max(255)
-            //     .required('도메인 is required'),
+            siteName: Yup
+                .string()
+                .max(255)
+                .required('이름 is required'),
         }),
+        
         onSubmit: async (values, helpers): Promise<void> => {
+            
             try {
                 // @ts-ignore
-                console.log(values);
-                const result = await siteApi.createSite(values);
-                if (result.code === 200) {
-                    toast.success('Site created!');
-                    router.push('/sites');
+                if(!nameOverlapCheck) {
+                    alert("사이트 이름 중복검사 필요");
+                    return ;
                 }
+
+                const result = await siteApi.createSite(values);
+                // TODO api 만든후 여기붙혀야함.
+                if(result && result.code ===200) {
+                    const {data} = result; 
+                    if(data) {
+                        const result:any = await relationApi.createSiteRelation({siteId:data.siteId,applicationIdList:selectedCheckList})
+                        if(result.code===200){
+                            toast.success('Site created!');
+                            router.push('/sites');
+                        }      
+                    }  
+                }
+
             } catch (err: any) {
                 console.error(err);
                 toast.error('Something went wrong!');
@@ -78,16 +96,15 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
         }
     });
 
-
     const getUser = async () => {
+        // TODO 추후 수정, 인피니티 스크롤로 받아와야하나?
         const params = {
             page: 0,
             size: 100
         }
-
         try {
             const result = await userApi.getUsers(params);
-            const { total, list }: any = result.data;
+            const { list }: any = result.data;
             if (result) {
                 setUsers(list);
             }
@@ -99,12 +116,20 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
     // 사이트 이름 중복검사 함수
     const handleCheckSiteName = useCallback(async () => {
         try {
-            // const result = await 
+            if(siteName === ""){
+                toast.error("아이디를 입력해주세요");
+                return ;
+            }
+            const result = await siteApi.getExistsSiteName(siteName);
+            if(result.data === true){
+                setNameOverlapCheck(false);
+            }else{
+                setNameOverlapCheck(true);
+            }
         } catch (err) {
             console.error(err);
         }
-
-    }, [])
+    }, [siteName])
 
     const handleAllChange = () => {
         setAllChecked(prev => !prev);
@@ -120,43 +145,42 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
         setSelectedCheckList([...list]);
     }
 
+    const getApplication = useCallback(async (params:any)=> {
+        try {
+            const result = await applicationApi.getApplications(params);
+            const {totalElements, content}:any = result.data;
+            if(result.message === 'Success'){
+                setApplications(content);
+            }
+        }catch (err){
+
+        }
+    },[])
+
+    useEffect(()=> {
+        const params = {
+            page:page,
+            size:size,
+        }
+        getApplication(params);
+    },[page,size])
+
     useEffect(()=> {
         if(allChecked) {
             let list:number[] = [];
-            dummyData.map((data)=> {
-                list.push(data.id);
+            applications.map((data)=> {
+                list.push(data.applicationId);
             })
             setSelectedCheckList([...list]);
         }else{
             setSelectedCheckList([]);
         }
     },[allChecked])
+    
 
     useEffect(() => {
         getUser();
     }, [])
-
-
-    const dummyData = [
-        {
-            id: 1,
-            application: 'board1',
-            description: 'board설명',
-            url: 'boardUrl'
-        },
-        {
-            id: 2,
-            application: 'board2',
-            description: 'board설명',
-            url: 'boardUrl'
-        },
-        {
-            id: 3,
-            application: 'board3',
-            description: 'board설명',
-            url: 'boardUrl'
-        },
-    ]
 
     return (
         <>
@@ -186,7 +210,13 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                             label="사이트 이름"
                                             name="siteName"
                                             onBlur={formik.handleBlur}
-                                            onChange={formik.handleChange}
+                                            // onChange={formik.handleChange}
+                                            onChange={e => {
+                                                formik.handleChange(e)
+                                                setNameOverlapCheck(false);
+                                                setSiteName(e.currentTarget.value);
+                                            }}
+
                                             // required
                                             value={formik.values.siteName}
                                         >
@@ -219,16 +249,16 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 {/*    }*/}
                                 {/*/>*/}
                                 <TextField
-                                    error={Boolean(formik.touched.userName && formik.errors.userName)}
+                                    error={Boolean(formik.touched.userId && formik.errors.userId)}
                                     fullWidth
-                                    helperText={formik.touched.userName && formik.errors.userName}
+                                    helperText={formik.touched.userId && formik.errors.userId}
                                     label="관리자"
                                     select
-                                    name="userName"
+                                    name="userId"
                                     onBlur={formik.handleBlur}
                                     onChange={formik.handleChange}
                                     // required
-                                    value={formik.values.userName}
+                                    value={formik.values.userId}
                                 >
                                     {
                                         users.map((data) => (
@@ -261,8 +291,8 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                 md={12}
                                 xs={12}
                             >
-                                <FormControlLabel control={<Checkbox name={"siteSso"} value={formik.values.siteSso} onChange={formik.handleChange} />} label={"Sso 여부"} />
-                                <FormControlLabel control={<Checkbox name={"siteEnabled"} value={formik.values.siteEnabled} onChange={formik.handleChange} />} label={"사용여부"} />
+                                <FormControlLabel control={<Checkbox name={"siteSso"} value={formik.values.siteSso} onChange={formik.handleChange} />} label={"SSO 여부"} />
+                                {/* <FormControlLabel control={<Checkbox name={"delYn"} value={formik.values.delYn} onChange={formik.handleChange} />} label={"사용여부"} /> */}
                             </Grid>
                         </Grid>
                     </CardContent>
@@ -277,21 +307,21 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                     <TableHead>
                                         <TableRow>
                                             <TableCell><input type="checkbox" checked={allChecked} onChange={handleAllChange} /></TableCell>
-                                            <TableCell>Application</TableCell>
+                                            <TableCell>Application name</TableCell>
                                             <TableCell>Description</TableCell>
                                             <TableCell>URL</TableCell>
                                         </TableRow>
                                     </TableHead>
                                     <TableBody>
                                         {
-                                            dummyData.map((data) => (
+                                            applications.map((data) => (
                                                 <TableRow
-                                                    key={data.id}
+                                                    key={data.applicationId}
                                                 >
-                                                    <TableCell><input type="checkbox" onChange={(e) => handleChange(e,data.id)} checked={selectedCheckList.includes(data.id)} /></TableCell>
-                                                    <TableCell>board</TableCell>
-                                                    <TableCell>board 설명</TableCell>
-                                                    <TableCell>boardUrl</TableCell>
+                                                    <TableCell><input type="checkbox" onChange={(e) => handleChange(e,data.applicationId)} checked={selectedCheckList.includes(data.applicationId)} /></TableCell>
+                                                    <TableCell>{data.applicationName}</TableCell>
+                                                    <TableCell>{data.applicationDescription}</TableCell>
+                                                    <TableCell>{data.applicationUrl}</TableCell>
                                                 </TableRow>
                                             ))
                                         }
@@ -303,87 +333,84 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                     </CardContent>
                 </Card>
                 <Divider />
-                {/*<Card>*/}
-                {/*    <CardHeader title={"db"} />*/}
-                {/*    <CardContent>*/}
-                {/*        <Grid*/}
-                {/*            container*/}
-                {/*            spacing={2}*/}
-                {/*        >*/}
-                {/*            <Grid*/}
-                {/*                item*/}
-                {/*                xs={12}*/}
-                {/*                md={6}*/}
-                {/*            >*/}
-                {/*                <TextField*/}
-                {/*                    fullWidth*/}
-                {/*                    select*/}
-                {/*                    error={Boolean(formik.touched.dbDriver && formik.errors.dbDriver)}*/}
-                {/*                    helperText={formik.touched.dbDriver && formik.errors.dbDriver}*/}
-                {/*                    name={"dbDriver"}*/}
-                {/*                    // value={dbValue}*/}
-                {/*                    onBlur={formik.handleBlur}*/}
-                {/*                    onChange={formik.handleChange}*/}
-                {/*                    >*/}
-                {/*                    <MenuItem key={"postgre"} value={"postgre"}>PostgreSQL</MenuItem>*/}
-                {/*                    <MenuItem key={"maria"} value={"maria"}>Maria</MenuItem>*/}
-                {/*                    <MenuItem key={"oracle"} value={"oracle"}>Oracle</MenuItem>*/}
-                {/*                </TextField>*/}
-                {/*            </Grid>*/}
-                {/*            <Grid*/}
-                {/*                item*/}
-                {/*                xs={12}*/}
-                {/*                md={6}*/}
-                {/*            >*/}
-                {/*                <TextField*/}
-                {/*                    error={Boolean(formik.touched.dbUrl && formik.errors.dbUrl)}*/}
-                {/*                    fullWidth*/}
-                {/*                    helperText={formik.touched.dbUrl && formik.errors.dbUrl}*/}
-                {/*                    label="dbUrl"*/}
-                {/*                    name="dbUrl"*/}
-                {/*                    onBlur={formik.handleBlur}*/}
-                {/*                    onChange={formik.handleChange}*/}
-                {/*                    // required*/}
-                {/*                    value={formik.values.dbUrl}*/}
-                {/*                />*/}
-                {/*            </Grid>*/}
-                {/*            <Grid*/}
-                {/*                item*/}
-                {/*                xs={12}*/}
-                {/*                md={6}*/}
-                {/*            >*/}
-                {/*                <TextField*/}
-                {/*                    error={Boolean(formik.touched.dbUser && formik.errors.dbUser)}*/}
-                {/*                    fullWidth*/}
-                {/*                    helperText={formik.touched.dbUser && formik.errors.dbUser}*/}
-                {/*                    label="id"*/}
-                {/*                    name="dbUser"*/}
-                {/*                    onBlur={formik.handleBlur}*/}
-                {/*                    onChange={formik.handleChange}*/}
-                {/*                    // required*/}
-                {/*                    value={formik.values.dbUser}*/}
-                {/*                />*/}
-                {/*            </Grid>*/}
-                {/*            <Grid*/}
-                {/*                item*/}
-                {/*                xs={12}*/}
-                {/*                md={6}*/}
-                {/*            >*/}
-                {/*                <TextField*/}
-                {/*                    error={Boolean(formik.touched.dbPassword && formik.errors.dbPassword)}*/}
-                {/*                    fullWidth*/}
-                {/*                    helperText={formik.touched.dbPassword && formik.errors.dbPassword}*/}
-                {/*                    label="password"*/}
-                {/*                    name="dbPassword"*/}
-                {/*                    onBlur={formik.handleBlur}*/}
-                {/*                    onChange={formik.handleChange}*/}
-                {/*                    // required*/}
-                {/*                    value={formik.values.dbPassword}*/}
-                {/*                />*/}
-                {/*            </Grid>*/}
-                {/*        </Grid>*/}
-                {/* </CardContent> */}
-                {/* </Card> */}
+                {/* <Card>
+                   <CardHeader title={"db"} />
+                   <CardContent>
+                       <Grid
+                            container
+                            spacing={2}
+                        >
+                            <Grid
+                                item
+                                xs={12}
+                                md={6}
+                            >
+                                <TextField
+                                    fullWidth
+                                    select
+                                    error={Boolean(formik.touched.dbDriver && formik.errors.dbDriver)}
+                                    helperText={formik.touched.dbDriver && formik.errors.dbDriver}
+                                    name={"dbDriver"}
+                                    value={formik.touched.dbDriver}
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    >
+                                    <MenuItem key={"postgre"} value={"postgre"}>PostgreSQL</MenuItem>
+                                    <MenuItem key={"maria"} value={"maria"}>Maria</MenuItem>
+                                    <MenuItem key={"oracle"} value={"oracle"}>Oracle</MenuItem>
+                                </TextField>
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                md={6}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.dbUrl && formik.errors.dbUrl)}
+                                    fullWidth
+                                    helperText={formik.touched.dbUrl && formik.errors.dbUrl}
+                                    label="dbUrl"
+                                    name="dbUrl"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    value={formik.values.dbUrl}
+                                />
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                md={6}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.dbUser && formik.errors.dbUser)}
+                                    fullWidth
+                                    helperText={formik.touched.dbUser && formik.errors.dbUser}
+                                    label="id"
+                                    name="dbUser"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    value={formik.values.dbUser}
+                                />
+                            </Grid>
+                            <Grid
+                                item
+                                xs={12}
+                                md={6}
+                            >
+                                <TextField
+                                    error={Boolean(formik.touched.dbPassword && formik.errors.dbPassword)}
+                                    fullWidth
+                                    helperText={formik.touched.dbPassword && formik.errors.dbPassword}
+                                    label="password"
+                                    name="dbPassword"
+                                    onBlur={formik.handleBlur}
+                                    onChange={formik.handleChange}
+                                    value={formik.values.dbPassword}
+                                />
+                            </Grid>
+                        </Grid>
+                 </CardContent> 
+                 </Card>  */}
                 <Box
                     sx={{
                         display: 'flex',

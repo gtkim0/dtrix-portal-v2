@@ -30,7 +30,7 @@ class SiteApi {
         return instance.get<Result<Site>, Result<Site>>(`${path}/${id}`);
     }
 
-    createSite(site: Site): Promise<Result<Site>> {
+    createSite(site: any): Promise<Result<Site>> {
         return instance.post<Result<Site>, Result<Site>>(path, site);
     }
 
@@ -49,6 +49,14 @@ class SiteApi {
     deleteSite(id: any): Promise<Result<Site>> {
         return instance.delete<Result<Site>, Result<Site>>(`${path}?siteId=${id}`);
     }
+
+    // 사이트 이름 중복 검사
+    getExistsSiteName(name:any): Promise<any> {
+        return instance.get<Result<any>,Result<any>>(`${path}/exists?siteName=${name}`);
+    }
+
+
+
 }
 
 export const siteApi = new SiteApi();

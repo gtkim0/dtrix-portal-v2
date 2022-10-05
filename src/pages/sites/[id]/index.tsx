@@ -16,11 +16,13 @@ import SiteBasicDetail from "../../../components/sites/site-basic-detail";
 import toast from "react-hot-toast";
 import SiteServiceDetail from '../../../components/sites/site-service-detail';
 import SiteDbDetail from '../../../components/sites/site-db-detail';
+import { relationApi } from '../../../apis/relation-api';
 
 
 const SiteDetail:NextPage = () => {
     const router = useRouter();
     const [site,setSite] = useState<Site | any>(null);
+    const [relation,setRelation] = useState<any>();
     const id = router.query.id;
 
     const getSite = useCallback(async ()=> {
@@ -33,16 +35,34 @@ const SiteDetail:NextPage = () => {
         }
     },[])
 
+    console.log(site);
+
+    const getRelation = useCallback(async(siteId:number) => {
+        try {
+            const result:any = await relationApi.getSiteRelation({siteId:siteId});
+            setRelation(result.data);
+        } catch(err:any) {
+            toast.error(err);
+        }
+
+    },[])
+
     useEffect(()=> {
         getSite();
     },[])
+
+    useEffect(()=> {
+        if(site) 
+            getRelation(site.siteId);
+    },[site])
 
     if(!site){
         return null;
     }
 
-    console.log(site);
-
+    if(!relation) {
+        return null;
+    }
     return (
         <>
             <Head>
@@ -160,7 +180,7 @@ const SiteDetail:NextPage = () => {
                     <Box sx={{mt:3}}>
                         <Grid container spacing={3}>
                             <Grid item xs={12}>
-                                <SiteServiceDetail />
+                                <SiteServiceDetail relation={relation} />
                             </Grid>
                         </Grid>
                     </Box>

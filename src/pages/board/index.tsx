@@ -1,6 +1,6 @@
 import { NextPage } from 'next';
 import React, {useRef, useEffect, useCallback, useState, MouseEvent} from 'react';
-import { Container, Box, Grid, Typography, Card,Button, Divider, TextField, InputAdornment } from '@mui/material'
+import { Container, Box, Grid, Typography, Card,Button, Divider, TextField, InputAdornment ,List, MenuItem } from '@mui/material'
 import Layout from '../../components/Layout/layout';
 import {Search as SearchIcon} from "../../icons/search";
 import BoardListTable from '../../components/board/board-list-table';
@@ -93,10 +93,14 @@ const Board:NextPage = () => {
         },
     ]
 
+
+
+
     // 게시물 필터
     const handleQueryChange = (e:React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
     }
+
 
     return (
         <>
@@ -168,6 +172,8 @@ const Board:NextPage = () => {
                                     }}
                                 />
                             </Box>
+
+
                             <TextField
                                 label="정렬"
                                 name="sort"

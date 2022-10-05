@@ -46,6 +46,8 @@ class ApplicationApi {
         return instance.get<Result<any>,Result<any>>(`${path}/unregisterd`);
     }
 
+    
+
 }
 
 export const applicationApi = new ApplicationApi();
