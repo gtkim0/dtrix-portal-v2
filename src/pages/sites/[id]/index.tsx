@@ -1,5 +1,5 @@
 import React, {useCallback, useEffect, useState} from 'react';
-import {NextPage} from 'next';
+import {GetStaticPaths, NextPage} from 'next';
 import {useRouter} from "next/router";
 import type { Site } from '../../../types/site';
 import {siteApi} from "../../../apis/site-api";
@@ -17,9 +17,11 @@ import toast from "react-hot-toast";
 import SiteServiceDetail from '../../../components/sites/site-service-detail';
 import SiteDbDetail from '../../../components/sites/site-db-detail';
 import { relationApi } from '../../../apis/relation-api';
+import {Application} from '../../../types/application';
 
 
-const SiteDetail:NextPage = () => {
+const SiteDetail:NextPage = (props) => {
+    console.log(props);
     const router = useRouter();
     const [site,setSite] = useState<Site | any>(null);
     const [relation,setRelation] = useState<any>();
@@ -198,6 +200,14 @@ const SiteDetail:NextPage = () => {
             </Box>
         </>
     )
+}
+
+export async function getServerSideProps(data:any) {
+    return {
+        props: {
+            data
+        }
+    }
 }
 
 // @ts-ignore

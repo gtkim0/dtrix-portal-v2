@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import type { FC } from 'react';
-import { Checkbox, Table, TableHead, TableRow, TableCell, Typography, Link, FormGroup, FormControlLabel, Button } from '@mui/material';
+import { Checkbox, Table, TableHead, 
+    TableRow, TableCell, Typography, Link, FormGroup,
+     FormControlLabel, Button , TablePagination } from '@mui/material';
 import NextLink from "next/link";
 import TableBody from '@mui/material/TableBody';
 import {styled} from '@mui/system';
@@ -13,42 +15,6 @@ import {MenuType} from '../../types/menu';
 interface IMenuListTableProps {
 
 }
-
-const dummyData = [
-    {
-        id: 1,
-        parentMenu: '',
-        menuName: '메뉴1',
-        public: true,
-        use: true,
-        level: 1
-    },
-    {
-        id: 2,
-        parentMenu: '메뉴1',
-        menuName: '메뉴1-1',
-        public: true,
-        use: true,
-        level: 2
-    },
-    {
-        id: 3,
-        parentMenu: '메뉴1',
-        menuName: '메뉴1-2',
-        public: true,
-        use: true,
-        level: 2
-    },
-    {
-        id: 4,
-        parentMenu: '메뉴1',
-        menuName: '메뉴1-3',
-        public: true,
-        use: true,
-        level: 2
-    }
-]
-
 const StyledTableCell = styled(TableCell)({
     textAlign:'center',
     whiteSpace:'nowrap'
@@ -68,13 +34,16 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
     const [deleteOpen,setDeleteOpen] = useState(false);
     const [deleteMenu,setDeleteMenu] = useState<any>();
     const [currentPage, setCurrentPage] = useState<number>(0);
+    const [totalCount, setTotalCount] = useState<number>(0);
 
     // 메뉴 리스트
     const [menuList,setMenuList] = useState<any>();
 
+    const [editMenuInfo,setEditMenuInfo] = useState<any>();
     // 메뉴 팝업 컨트롤
     
-    const handleEditOpen = () => {
+    const handleEditOpen = async (menu:any) => {
+        await setEditMenuInfo(menu)
         setEditOpen(true);
     }
     const handleDeleteOpen = (menu:any) => {
@@ -89,24 +58,28 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
     const deleteModalClose = () => {
         setDeleteOpen(false);
     }
-
     
     //TODO 메뉴불러오는 api 적용해야함.
     const getMenuList = async({siteId,currentPage}:any) => {
         try {
             // TODO site_id 현재 하드코딩 , 추후 변경필요
-            const result:any = await menuApi.getMenus({site_id:1,currentPage});
-            setMenuList(result.menuMngList);
+            const result:any = await menuApi.getMenus({site_id:1,currentPage:currentPage});
+            console.log(result);
+            setMenuList(result.menuInfoList);
+            setTotalCount(result.menuInfoPaging.totalRecordCount);
         }catch(err:any){
             toast.error(err);
         }
     }
 
+    const handlePageChange = (e:any, newPage:number) => {
+        setCurrentPage(newPage);
+    }
+
     useEffect(()=> {
         getMenuList({site_id:1,currentPage:currentPage});
     },[currentPage])
-    
-    
+
     if(!menuList) {
         return <></>
     }
@@ -141,7 +114,7 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
                         </TableRow>
                     </TableHead>
                     <TableBody>
-                        {menuList.map((menu:MenuType) => (
+                        {menuList.map((menu:any) => (
                             <TableRow
                                 hover
                                 key={menu.menuId}
@@ -172,11 +145,11 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
                                 </TableCell>
                                 <TableCell>
                                     <FormGroup>
-                                        <FormControlLabel sx={{ justifyContent: "center", margin: '0 auto' }} control={<Checkbox disabled sx={{ cursor: 'text' }} checked={ menu.publicYn===""? false : true && false} onChange={() => { }} />} label={""} />
+                                        <FormControlLabel sx={{ justifyContent: "center", margin: '0 auto' }} control={<Checkbox disabled sx={{ cursor: 'text' }} checked={ menu.menuPublicYn=== "Y" ? true : false} onChange={() => { }} />} label={""} />
                                     </FormGroup>
                                 </TableCell>
                                 <TableCell sx={{textAlign:'center'}}>
-                                    <Button onClick={handleEditOpen}>수정</Button>
+                                    <Button onClick={()=>handleEditOpen(menu)}>수정</Button>
                                 </TableCell>
                                 <TableCell sx={{textAlign:'center'}}>
                                     <Button  onClick={()=>handleDeleteOpen(menu)}>삭제</Button>
@@ -185,7 +158,25 @@ const MenuListTable: FC<IMenuListTableProps> = () => {
                         ))}
                     </TableBody>
                 </Table>
-                <MenuEditModal open={editOpen} handleClose={editModalClose}/>
+                <TablePagination
+                    component="div"
+                    count={totalCount}
+                    onPageChange={handlePageChange}
+                    // onRowsPerPageChange={onRowsPerPageChange}
+                    page={currentPage}
+                    rowsPerPage={10}
+                    rowsPerPageOptions={[10,50,100]}
+                    sx={(theme) => ({
+                        ".MuiTablePagination-toolbar": {
+                            height: 56,
+                        },
+                        ".MuiTablePagination-selectLabel": {
+                            color: theme.palette.text.secondary,
+                            lineHeight: 1.66,
+                        },
+                    })}
+                />
+                <MenuEditModal editMenuInfo={editMenuInfo} open={editOpen} handleClose={editModalClose}/>
                 <MenuDeleteModal deleteMenu={deleteMenu} open={deleteOpen} handleClose={deleteModalClose} />
             </div>
            

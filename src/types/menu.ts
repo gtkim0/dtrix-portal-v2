@@ -4,7 +4,21 @@ export interface MenuType {
     upMenuId:string,
     menuName:string,
     sortOrder:string,
-    useYn:string,
+    
     publicYn:string,
-    menuComment:string
+    menuComment:string,
+
+    fullMenuName?:string,
+    useYn?:string,
+}
+
+export interface SideMenuType {
+    menuId:number,
+    menuName:string,
+    menuDepth:number,
+    menuUrl:string,
+    menuUseYn:string,
+    menuPublicYn:string,
+    siteId:number,
+    menuParent:number
 }

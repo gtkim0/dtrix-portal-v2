@@ -41,15 +41,13 @@ const StyledTreeItemRoot:any = styled(TreeItem)(({ theme }) => ({
 
 
 export const StyledTreeItem = (props:any) => {
-    const {bgColor,color,labelIcon:LabelIcon,labelInfo,labelText,onClick,node,...other} = props;
+    const {menuUrl,bgColor,color,labelIcon:LabelIcon,labelInfo,labelText,onClick,node,...other} = props;
     const router = useRouter();
 
     const viewPage = (e:any,node:any) => {
-        console.log(e);
-        console.log(node);
         //TODO child 가 있으면??  아니면 route 가 있으면? push 아니면 하위페이지 오픈
-        if(node.route){
-            router.push(`${node.route}`);
+        if(node){
+            router.push(`${node.menuUrl}`);
         }
     }
 

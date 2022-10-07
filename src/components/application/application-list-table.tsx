@@ -75,12 +75,12 @@ const ApplicationListTable:FC<ISiteListTable> = (props) => {
                                 {/*</TableCell>*/}
 
                                 <TableCell>
-                                    <Typography sx={{textAlign:'center'}}>
+                                    <Typography sx={{textAlign:'center',whiteSpace:'nowrap'}}>
                                         {application.applicationName}
                                     </Typography>
                                 </TableCell>
                                 <TableCell sx={{pl:5}}>
-                                    <Typography>
+                                    <Typography sx={{whiteSpace:'nowrap'}}>
                                         {application.applicationDescription}
                                     </Typography>
                                 </TableCell>

@@ -26,7 +26,7 @@ class RelationApi {
     }
 
     deleteSiteRelation(siteId:any): Promise<Result<any>> {
-        return instance.delete<Result<any>, Result<any>>(`${path}?siteId=${siteId}`);
+        return instance.delete<Result<any>, Result<any>>(`${path}/del?siteId=${siteId}`);
         // return instance.get<Result<any>, Result<any>>(`${path}`,siteId);
     }
 

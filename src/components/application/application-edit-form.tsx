@@ -84,9 +84,12 @@ const ApplicationEditForm:FC<IApplicationEditFormProps> = (props) => {
 
     const getRegisted = async () => {
         try {
+            let list = [];
+            let newList =[];
             const response =  await applicationApi.getApplicationUnRegisterd();
-            console.log(response);
-            setUrl(response.data);
+            list.push(response.data);
+            newList = list[0].concat(application.applicationUrl);
+            setUrl(newList);
         } catch (err) {
             console.error(err);
         }
@@ -99,10 +102,6 @@ const ApplicationEditForm:FC<IApplicationEditFormProps> = (props) => {
     if(!application) {
         return null;
     }
-
-    url.map((data)=> {
-        console.log(typeof data);
-    })
 
     return (
         <form

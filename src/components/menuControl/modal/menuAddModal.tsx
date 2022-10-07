@@ -6,7 +6,6 @@ import MenuCreateForm from '../menu-create-form';
 
 interface IMenuAddModalProps {
     open: boolean,
-    // openId?: number,
     handleClose: any;
 }
 

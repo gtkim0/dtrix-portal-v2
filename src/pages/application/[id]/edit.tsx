@@ -35,26 +35,13 @@ const ApplicationEdit :NextPage = () => {
         }
     },[])
 
-    // useEffect(()=> {
-    //     if(param)
-    //         getApplication();
-    // },[param])
-    //
-    // useEffect(()=> {
-    //     if(router && router.query) {
-    //         setParam(router.query.id)
-    //     }
-    // },[router])
-
     useEffect(()=> {
         getApplication();
     },[])
 
-
     if(!application){
         return null;
     }
-
 
     return (
         <>

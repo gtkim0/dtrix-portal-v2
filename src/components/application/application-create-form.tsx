@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useCallback} from 'react';
 import type {FC} from 'react';
 import {
     Autocomplete,
@@ -25,7 +25,9 @@ interface IApplicationCreateFormProps {
 
 const ApplicationCreateForm:FC<IApplicationCreateFormProps> = (props) => {
     const router = useRouter();
-    const [existData,setExistData] = useState<string>('');
+    const [nameOverlapCheck,setNameOverlapCheck] = useState(false);
+    const [applicationName,setApplicationName] = useState<string>('');
+    const [url,setUrl] = useState<any[]>([]);
 
     const formik = useFormik({
         initialValues: {
@@ -38,8 +40,13 @@ const ApplicationCreateForm:FC<IApplicationCreateFormProps> = (props) => {
         }),
         onSubmit: async (values,helpers) : Promise<void> => {
             try {
+
+                if(!nameOverlapCheck) {
+                    toast.error("이름 중복검사 필요")
+                }
+
                 const result = await applicationApi.createApplication(values);
-                if(result.message ==="Success") {
+                if(result && result.code ===200) {
                     toast.success("application created!");
                     router.push('/application');
                 }
@@ -53,28 +60,25 @@ const ApplicationCreateForm:FC<IApplicationCreateFormProps> = (props) => {
         }
     })
 
-    const handleCheckExist = async() => {
-
-        if(formik.values.applicationName === ""){
-            alert("이름을 입력해주세요");
-        }
-
-        else {
-            try {
-                const result = await applicationApi.getExistsApplication(formik.values.applicationName);
-                console.log(result);
-                if (result.data === true) {
-                    alert('중복된 이름');
-                } else {
-                    alert('사용 가능 이름');
-                }
-            } catch (err) {
-
+    const handleCheckExist = useCallback( async ()=> {
+        try {
+            if(applicationName === ""){
+                toast.error('이름을 입력해주세요')
+                setNameOverlapCheck(false);
+                return ;
             }
+            const result = await applicationApi.getExistsApplication(applicationName);
+            if (result.data === true) {
+                toast.error('중복된 이름입니다.');
+                setNameOverlapCheck(false);
+            } else {
+                toast.success('사용 가능한 이름입니다.');
+                setNameOverlapCheck(true);
+            }
+        } catch (err) {
+            console.error(err);
         }
-    }
-
-    const [url,setUrl] = useState<any[]>([]);
+    },[applicationName])
 
     const getRefisted = async () => {
         try {
@@ -85,8 +89,6 @@ const ApplicationCreateForm:FC<IApplicationCreateFormProps> = (props) => {
             console.error(err);
         }
     }
-
-
 
     useEffect(()=> {
         getRefisted();
@@ -113,18 +115,26 @@ const ApplicationCreateForm:FC<IApplicationCreateFormProps> = (props) => {
                                 xs={12}
                                 // sx={{display:'flex'}}
                             >
-                                <TextField
-                                    error={Boolean(formik.touched.applicationName && formik.errors.applicationName)}
-                                    fullWidth
-                                    helperText={formik.touched.applicationName && formik.errors.applicationName}
-                                    label="이름"
-                                    name="applicationName"
-                                    onBlur={formik.handleBlur}
-                                    onChange={formik.handleChange}
-                                    // required
-                                    value={formik.values.applicationName}
-                                />
-                                <Button onClick={handleCheckExist} variant={"contained"}>중복 체크</Button>
+                                <Box sx={{ position: 'relative' }}>
+                                    <Box sx={{ width: '100%',display: 'flex', alignItems: 'center' }}>
+                                        <TextField
+                                            error={Boolean(formik.touched.applicationName && formik.errors.applicationName)}
+                                            fullWidth
+                                            helperText={formik.touched.applicationName && formik.errors.applicationName}
+                                            label="이름"
+                                            name="applicationName"
+                                            onBlur={formik.handleBlur}
+                                            onChange={e => {
+                                                formik.handleChange(e)
+                                                setNameOverlapCheck(false);
+                                                setApplicationName(e.currentTarget.value);
+                                            }}
+                                            required
+                                            value={formik.values.applicationName}
+                                        />
+                                        <Button onClick={handleCheckExist} sx={{ position: 'absolute', right: '0', my: 'auto',mr:2 }} variant={"contained"}>중복 체크</Button>
+                                    </Box>
+                                </Box>
                             </Grid>
 
 

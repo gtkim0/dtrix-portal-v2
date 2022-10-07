@@ -1,7 +1,8 @@
 import instance from "./index";
 import type { MenuType } from '../types/menu';
+import { AnyAction } from "@reduxjs/toolkit";
 
-const path = '/menu/menu';
+const path = '/menu';
 
 export interface MenuPaging {
     currentPage:number,
@@ -37,26 +38,29 @@ class MenuApi {
         return instance.get<Result<any>, Result<any>>(`${path}/list`,{params});
     }
 
-    getMenu(id: any): Promise<Result<any>> {
-        return instance.get<Result<any>, Result<any>>(`${path}/${id}`);
-    }
-
-    createMenu(data: any): Promise<Result<any>> {
-        return instance.post<Result<any>, Result<any>>(path, data);
-    }
-
-    updateMenu(id: any, data: any): Promise<Result<any>> {
-        return instance.put<Result<any>, Result<any>>(`${path}/${id}`, data);
-    }
-
-    deleteMenu(id: any): Promise<Result<any>> {
-        return instance.delete<Result<any>, Result<any>>(`${path}/${id}`);
-    }
-
     // 메뉴 리스트 (페이징 적용 x) 
     // url : /menu/list/site
     getSideMenus(params:any): Promise<Result<MenuType>> {
         return instance.get<Result<any>,Result<any>>(`${path}/list/site`,{params});
+    }
+
+    getModifyInfoData(site_id:any,menu_id:AnyAction): Promise<Result<any>> {
+        return instance.get<Result<any>,Result<any>>(`${path}/modify/info?site_id=${site_id}&menu_id=${menu_id}`)
+    }
+
+    // 메뉴 등록 ResponseBody 로 전송(GET,POST 관계없음)
+    createMenu(body:any): Promise<Result<any>> {
+        return instance.post<Result<any>, Result<any>>(`${path}/regist/process`,body);
+    }
+
+    // 메뉴 수정  ResponseBody 로 전송(GET,POST 관계없음)
+    updateMenu(body:any): Promise<Result<any>> {
+        return instance.post<Result<any>, Result<any>>(`${path}/modify/process`,body);
+    }
+
+    // 메뉴 삭제 menu_id, site_id 값 전송
+    deleteMenu(body: any): Promise<Result<any>> {
+        return instance.delete<Result<any>, Result<any>>(`${path}/remove/process?site_id=${body.site_id}&menu_id=${body.menu_id}`);
     }
 
 }

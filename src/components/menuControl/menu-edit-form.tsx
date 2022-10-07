@@ -1,65 +1,222 @@
-import React, {useState} from 'react';
+import React, {useState, useCallback, useEffect} from 'react';
 import type {FC} from 'react';
-import {Box, Container, Card, Divider, Grid,TextField, Typography, Button,FormControlLabel, Checkbox, MenuItem } from '@mui/material';
+import {Box, Container, Card, Divider, Grid,
+    TextField, Typography, Button,FormControlLabel, Checkbox, MenuItem,
+    TableHead,TableCell,Table,TableBody ,TableRow
+
+} from '@mui/material';
 import {useFormik} from "formik";
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader/CardHeader';
-import { menuApi } from '../../apis/menu-api';
 import {toast} from 'react-hot-toast';
-
+import {useDispatch, useSelector} from 'react-redux';
+import {RootState} from '../../store/index'
+import { getSidePrivilegeMenus } from '../../store/slice/menuSlice';
+import {privilegeApi} from '../../apis/privilege-api';
+import _, { isElement, isEmpty } from 'lodash';
+import {menuApi} from '../../apis/menu-api';
 
 interface IMenuEditFormProps {
     handleClose: any;
+    editMenuInfo:any;
+    selectEditMenuInfo:any
 }
 
 const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
+    const dispatch = useDispatch();
+    // const selectEditMenuInfo:any = useSelector((state:RootState)=>state.menu.editMenuInfo);
+    const sideMenuList:any = useSelector((state:RootState)=>state.menu.menuList);
+    const {handleClose, editMenuInfo,selectEditMenuInfo} = props;
+    const [privilege, setPrivilege] = useState<any>();
+    const [newPrivilege,setNewPrivilege] = useState<any>();
+    const [selectedPrivilegeGroup, setSelectedPrivilegeGroup] = useState<any>([]);
+    const [page, setPage] = useState(0);
+    const [size, setSize] = useState(100);
+    const [menuPublicYn, setMenuPublicYn] = useState(false);
+    const [menuUseYn, setMenuUseYn] = useState(false);
+    const [privilegeGroup, setPrivilegeGroup] = useState<any>({
+        privilegeId: 0,
+        selectYn: false,
+        insertYn: false,
+        updateYn: false,
+        delYn: false
+    });
 
-    const {handleClose} = props;
-
-    const [board,setBoard] = useState(false);
-    const [dashboard, setDashBoard] = useState(false);
+    console.log(selectEditMenuInfo);
 
     const formik = useFormik({
         initialValues: {
-            menuName:'123',        //메뉴 이름
-            parentMenu:0,       //상위 메뉴
-            menuSort:'123',        //메뉴 정렬 
-            menuAuthority:'123',   //권한 설정
-            none:false,
-            board:'',
-            dashboard:'',
-            menuDescription:'',
-            menuPublic:true
+            siteId:1,
+            menuId:selectEditMenuInfo?.menuId,
+            menuName:selectEditMenuInfo?.menuName,        //메뉴 이름
+            menuParent:selectEditMenuInfo?.menuParent,       //상위 메뉴
+            menuPublicYn:selectEditMenuInfo?.menuPublicYn,
+            menuOrder: selectEditMenuInfo?.menuOrder ? selectEditMenuInfo.menuOrder : 0,
+            menuPrivilege: '0' as any ,
+            menuDepth: selectEditMenuInfo?.menuDepth,
+            menuUrl: selectEditMenuInfo?.menuUrl
         },
         onSubmit: async (values, helpers):Promise<void> => {
-             //TODO 메뉴 수정 API 적용해야함.
-            // props 로 수정팝업의 메뉴아이디를 가져와서 patch 함
+            const body = {
+                siteId: values.siteId,
+                menuId: values.menuId,
+                menuName:values.menuName,
+                menuPublicYn: menuPublicYn ? 'Y' : 'N',
+                menuPrivilege: selectedPrivilegeGroup,
+                menuOrder: values.menuOrder,
+                menuUseYn: menuUseYn ? 'Y' : 'N',
+                menuDepth: values.menuDepth,
+                menuUrl:values.menuUrl,
+                menuParent:values.menuParent 
+            }
+
             try {   
-                // const result = menuApi.updateMenu(props.menuId,values);
-                // if(result === true){
-                //     helpers.setSubmitting(false);
-                //     toast.success('User updated!');
-                //     //TODO 여기에 메뉴리스트 부르는 함수를 넘겨받아서 호출해야지. 리스트 갱신해야하니까
-                //     handleClose();
-                // }
+                const result = await menuApi.updateMenu(body);
+                if(Number(result) > 0) {
+                    helpers.setSubmitting(false);
+                    toast.success('menu updated!');
+                    handleClose();
+                }else{
+                    toast.error('menu update fail')
+                }
             } catch (err) {
-                // console.error(err);
-                // toast.error('Something went wrong!');
-                // helpers.setStatus({ success: false });
-                // helpers.setErrors({ submit: err.message });
-                // helpers.setSubmitting(false);
+                console.error(err);
+                toast.error('Something went wrong!');
+                helpers.setStatus({ success: false });
+                helpers.setSubmitting(false);
             }
         }
     })
 
-    const handleBoardCheck = (e:any) => {
-        setBoard(e.target.checked);
+    // 권한 그룹 불러오는 api
+    const getPrivileges = async ({ page, size }: any) => {
+        try {
+            const result = await privilegeApi.getPrivileges({ page: page, size: size });
+            let namePrivilege: String[] = [];
+            if (result) {
+                result.data.list.map((data: any) => {
+                    namePrivilege.push(data);
+                })
+            }
+            setNewPrivilege(namePrivilege);
+            setPrivilege(namePrivilege);
+        } catch (err) {
+
+        }
     }
 
-    const handleDashboardCheck = (e:React.ChangeEvent<HTMLInputElement>) => {
-        setDashBoard(e.target.checked);
+    const handlePrivilegeCheckChange = (e:any) => {
+        const { name, checked } = e.target;
+        setPrivilegeGroup({
+            ...privilegeGroup,
+            [name]: checked
+        })
     }
+
+    const handleMenuPublicChange = () => {
+        setMenuPublicYn(prev=>!prev);
+    }
+
+    const handleMenuUseYn = () => {
+        setMenuUseYn(prev=>!prev);
+    }
+
+    const handlePrivilegeChange = (e: any) => {
+        setPrivilegeGroup({
+            ...privilegeGroup,
+            privilegeId: e.target.value
+        })
+    }
+
+    const handleAddPrivilege = useCallback(() => {
+        setSelectedPrivilegeGroup((prevState: any) => [...prevState, privilegeGroup])
+        setPrivilegeGroup({
+            privilegeId: 0,  //초기값으로 변경시켜야함.
+            selectYn: false,
+            insertYn: false,
+            updateYn: false,
+            delYn: false
+        })
+    }, [privilegeGroup])
+
+    const handlePrivilegeRemove = (data1:any) => {
+        let list:any = [];
+        selectedPrivilegeGroup.filter((data:any)=>data.privilegeId !== data1.privilegeId).map((data:any)=> {
+            list.push(data);
+        })
+        setSelectedPrivilegeGroup(list);
+    }
+    console.log(selectedPrivilegeGroup);
+
+
+    useEffect(()=> {
+        if(selectEditMenuInfo){
+            setMenuPublicYn(selectEditMenuInfo.menuPublicYn=== "Y" ? true : false);
+            let list:any = [];
+            selectEditMenuInfo.privilegeList.map((data:any)=> {
+                list.push({
+                    privilegeId:data.privilegeId,
+                    selectYn: data.selectYn,
+                    insertYn: data.insertYn,
+                    updateYn: data.updateYn,
+                    delYn: data.delYn,
+                })
+            })
+            setSelectedPrivilegeGroup(list);
+        }
+    },[selectEditMenuInfo])
+
+    useEffect(()=> {
+        let list:any = [];
+        const deepPrivilege = _.cloneDeep(newPrivilege);
+        console.log(deepPrivilege);
+        if(deepPrivilege){
+            for(let i= 0; i<deepPrivilege.length; i++){
+                let id = deepPrivilege[i].privilegeId;
+                let check = false;
+                let result = selectedPrivilegeGroup.find((data:any)=> {
+                    if(data.privilegeId === id){
+                        check = true;
+                    }else {
+                        check = false;
+                    }
+                    return check;
+                })
+                if(result) {
+                    continue ;
+                }else {
+                    list.push(deepPrivilege[i]);
+                }
+            }
+        }
+        setPrivilege(list);
+    },[selectedPrivilegeGroup])
     
+    useEffect(() => {
+        getPrivileges({ page, size })
+    }, [page, size])
+
+    useEffect(()=> {
+        // TODO 사이트 아이디 우선 1번 고정
+        let body = {
+            menu_id:editMenuInfo.menuId,
+            site_id:1
+        }
+        dispatch(getSidePrivilegeMenus(body))
+    },[editMenuInfo])
+
+    useEffect(()=> {
+        if(!isEmpty(selectEditMenuInfo)) {
+            formik.setValues({
+                ...selectEditMenuInfo
+            })
+        }
+    },[selectEditMenuInfo])
+
+    if(!selectEditMenuInfo){
+        return <></>;
+    }
+
     return (
         <>
             <form
@@ -113,49 +270,20 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                                 xs={12}
                             >
                                <TextField
-                                 name="parentMenu"
+                                 name="menuParent"
                                  required
                                  select
                                  onChange={formik.handleChange}
                                  onBlur={formik.handleBlur}
-                                 value={formik.values.parentMenu}
+                                 value={formik.values.menuParent}
                                  sx={{width:250}}
                                >
-                                {/* TODO 추후에 데이터받아와서 넣어주기 */}
-                                    <MenuItem value={0}>111111</MenuItem>
-                                    <MenuItem value={2}>222222</MenuItem>
-                                    <MenuItem value={3}>333333</MenuItem>
-                               </TextField>
-                            </Grid>
-
-                            <Grid
-                                item
-                                md={2}
-                                xs={12}
-                                sx={{display:"flex"}}
-                            >
-                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                    정렬
-                                </Typography>
-                            </Grid>
-                            <Grid
-                                item
-                                md={10}
-                                xs={12}
-                            >
-                               <TextField
-                                 name="menuSort"
-                                 required
-                                 select
-                                 onChange={formik.handleChange}
-                                 onBlur={formik.handleBlur}
-                                 value={formik.values.menuSort}
-                                 sx={{width:250}}
-                               >
-                                {/* TODO 추후에 데이터 받아와서 넣어주기 */}
-                                    <MenuItem value={0}>1111111</MenuItem>
-                                    <MenuItem value={2}>2222222</MenuItem>
-                                    <MenuItem value={3}>3333333</MenuItem>
+                                {
+                                    sideMenuList.map((data:any)=> (
+                                        <MenuItem key={data.menuId} value={data.menuId}>{data.menuName}</MenuItem>
+                                    ))
+                                }
+                                
                                </TextField>
                             </Grid>
                             <Grid
@@ -170,115 +298,101 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                             </Grid>
                             <Grid
                                 item
+                                sx={{ display: 'flex' }}
                                 md={10}
                                 xs={12}
                             >
                                <TextField
-                                 name="menuAuthority"
-                                 required
+                                 name="menuPrivilege"
                                  select
-                                 onChange={formik.handleChange}
-                                 onBlur={formik.handleBlur}
-                                 value={formik.values.menuAuthority}
+                                 onChange={handlePrivilegeChange}
                                  sx={{width:250}}
                                >
-                                {/* TODO 추후에 데이터 받아와서 넣어주기 */}
-                                    <MenuItem value={0}>1111111</MenuItem>
-                                    <MenuItem value={2}>2222222</MenuItem>
-                                    <MenuItem value={3}>3333333</MenuItem>
+                               <MenuItem key="0" value="0">권한 선택</MenuItem>
+                                    {privilege?.map((data: any) => (
+                                        <MenuItem value={data.privilegeId} key={data.privilegeId}>{data.privilegeName}</MenuItem>
+                                    ))}
                                </TextField>
+                               {
+                                    Number(privilegeGroup.privilegeId) !== 0 &&
+                                    <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                                        <Box sx={{ px: 2 }}>
+                                            <label>select</label>
+                                            <input name="selectYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
+                                        </Box>
+                                        <Box sx={{ px: 2 }}>
+                                            <label>insert</label>
+                                            <input name="insertYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
+                                        </Box>
+                                        <Box sx={{ px: 2 }}>
+                                            <label>update</label>
+                                            <input name="updateYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
+                                        </Box>
+                                        <Box sx={{ px: 2 }}>
+                                            <label>del</label>
+                                            <input name="delYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
+                                        </Box>
+                                        <Button onClick={handleAddPrivilege} variant="contained">추가</Button>
+                                    </Box>
+                                }
                             </Grid>
+                            {
+                                selectedPrivilegeGroup && selectedPrivilegeGroup.length > 0 &&
                             <Grid
                                 item
-                                md={2}
                                 xs={12}
-                                sx={{display:"flex"}}
+                                md={12}
                             >
-                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                    컨텐츠
-                                </Typography>
-                            </Grid>
-                            <Grid
-                                item
-                                md={10}
-                                xs={12}
-                            >
-                               {/* <TextField
-                                    fullWidth
-                               >
-                               </TextField> */}
-                               <FormControlLabel 
-                                control={<Checkbox value={formik.values.none} 
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                 />} label="none" />
-                               <FormControlLabel control={<Checkbox value={board} onChange={handleBoardCheck} />} label="board" />
-                               {
-                                    board && 
-                                    <TextField 
-                                    select
-                                    name="board"
-                                    value={1}
-                                    sx={{mx:2}}
-                               >
-                                    <MenuItem value={1}>11111</MenuItem>
-                                    <MenuItem value={2}>22222</MenuItem>
-                                    <MenuItem value={3}>33333</MenuItem>
-                                    {/* TODO 추후 Board 목록? 이거이해잘 안감. 어떻게 동작되는지. */}
-                                    {
-                                        
-                                    }
-                               </TextField>
-                               }
-                               
-                               <FormControlLabel control={<Checkbox onBlur={formik.handleBlur}
-                                value={formik.values.dashboard} onChange={handleDashboardCheck} />} label="dashboard" />
-                               {
-                                    dashboard &&
-                                    <TextField 
-                                    select
-                                    value={1}
-                                    sx={{mx:2}}
-                                    name="dashboard"
-                                    >
-                                    <MenuItem value={1}>11111</MenuItem>
-                                    <MenuItem value={2}>22222</MenuItem>
-                                    <MenuItem value={3}>33333</MenuItem>
-                                    {/* TODO 추후 Board 목록? 이거이해잘 안감. 어떻게 동작되는지. */}
-                                    {
-                                        
-                                    }
-                                    </TextField>
-                               }
-                               
+                                <Table>
+                                    <TableHead>
+                                        <TableCell>
+                                            권한명
+                                        </TableCell>
+                                        <TableCell>
+                                            보기
+                                        </TableCell>
+                                        <TableCell>
+                                            생성
+                                        </TableCell>
+                                        <TableCell>
+                                            수정
+                                        </TableCell>
+                                        <TableCell>
+                                            삭제
+                                        </TableCell>
+                                        <TableCell>
 
+                                        </TableCell>
+                                    </TableHead>
+                                    <TableBody>
+                                        {
+                                            selectedPrivilegeGroup.map((data: any) => (
+                                                <TableRow key={data.privilegeId}>
+                                                    <TableCell>
+                                                        {data.privilegeId}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {data.selectYn ? "Y" : "N"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {data.insertYn ? "Y" : "N"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {data.updateYn ? "Y" : "N"}
+                                                    </TableCell>
+                                                    <TableCell>
+                                                        {data.delYn ? "Y" : "N"}
+                                                    </TableCell>
+                                                    <TableCell sx={{width:'100px'}}>
+                                                        <Button onClick={()=>handlePrivilegeRemove(data)} variant='contained'>삭제</Button>
+                                                    </TableCell>
+                                                </TableRow>
+                                            ))
+                                        }
+                                    </TableBody>
+                                </Table>
                             </Grid>
-                            <Grid
-                                item
-                                md={2}
-                                xs={12}
-                                sx={{display:"flex"}}
-                            >
-                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
-                                    설명
-                                </Typography>
-                            </Grid>
-                            <Grid
-                                item
-                                md={10}
-                                xs={12}
-                            >
-                               <TextField
-                                fullWidth
-                                name="menuDescription"
-                                required
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                value={formik.values.menuDescription}
-                                // label="메뉴명"
-                               >
-                               </TextField>
-                            </Grid>
+                            }
                             <Grid
                                 item
                                 md={2}
@@ -294,7 +408,24 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                                 md={10}
                                 xs={12}
                             >
-                               <FormControlLabel control={<Checkbox name="public" value={formik.values.menuPublic} onChange={formik.handleChange} onBlur={formik.handleBlur}/>} label="" />
+                               <FormControlLabel control={<Checkbox name="menuPublicYn" checked={menuPublicYn} value={menuPublicYn} onChange={handleMenuPublicChange} />} label="" />
+                            </Grid>
+                            <Grid
+                                item
+                                md={2}
+                                xs={12}
+                                sx={{display:"flex"}}
+                            >
+                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                    useYn
+                                </Typography>
+                            </Grid>
+                            <Grid
+                                item
+                                md={10}
+                                xs={12}
+                            >
+                               <FormControlLabel control={<Checkbox name="menuUseYn" checked={menuUseYn} value={menuUseYn} onChange={handleMenuUseYn} />} label="" />
                             </Grid>
                             <Grid
                                 item

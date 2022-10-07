@@ -18,7 +18,10 @@ interface Filters {
 
 type Sort =
     | 'createdAt,DESC'
-    | 'createdAt,ASC';
+    | 'createdAt,ASC'
+    | 'siteSso,ASC'
+    | 'siteSso,DESC'
+    ;
 
 interface SortOption {
     value: Sort;
@@ -33,6 +36,14 @@ const sortOptions: SortOption[] = [
     {
         label: '등록순 (oldest)',
         value: 'createdAt,ASC'
+    },
+    {
+        label: 'SSO 사용여부(N)',
+        value: 'siteSso,ASC'
+    },
+    {
+        label: 'SSO 사용여부(Y)',
+        value: 'siteSso,DESC'
     },
 ];
 
@@ -101,7 +112,7 @@ const Sites:NextPage = () => {
         const params = {
             page:page,
             size:size,
-            // sort: sort,
+            sort: sort,
         }
         getSite(params);
     },[page,size,sort])
@@ -110,7 +121,7 @@ const Sites:NextPage = () => {
         const params = {
             page:page,
             size:size,
-            // sort: sort,
+            sort: sort,
             siteName: filters.siteName
         }
         getSearchSite(params);

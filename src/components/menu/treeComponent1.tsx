@@ -27,27 +27,26 @@ interface ITreeComponentProps  {
     menuData : any
 }
 
-export const TreeComponent:FC<ITreeComponentProps> = (props) => {
+export const TreeComponent1:FC<ITreeComponentProps> = (props) => {
     const {menuData} = props;
-    console.log(menuData);
     const router = useRouter();
     // const {bgColor,color,labelIcon,labelInfo,labelText,...other} = props;
 
+    console.log(menuData);
     const [treeItem,setTreeItem] = useState<any[]>([]);
 
     useEffect(()=> {
         const cloneData = _.cloneDeep(menuData);
-        console.log(cloneData);
         const treeList:any = [];
         cloneData?.map((data:any)=> {
-            if(data && data.menuDepth===0){
+            if(data && data.level===1){
                 treeList.push(data);
             }
         })
 
         const findChildren = (parentNode:any) => {
                 parentNode.children = cloneData?.filter((data: any) => {
-                    const isChild = parentNode.menuId === data.menuParent;
+                    const isChild = parentNode.id === data.parentId;
                     if (isChild) {
                         findChildren(data);
                     }
@@ -55,18 +54,18 @@ export const TreeComponent:FC<ITreeComponentProps> = (props) => {
                 })
         }
 
-    
         treeList.forEach((data:any)=> {
             findChildren(data);
         })
+
         setTreeItem(treeList);
     },[menuData])
 
 
     const renderItem = (node:any) => {
-        const {menuId,menuName,menuDepth,menuParent,menuUrl, menuUseYn} = node;
+        const {id,name,type,level,route} = node;
         return (
-                <StyledTreeItem nodeId={menuId} key={menuId} labelText={menuName} menuUrl={menuUrl} node={node} >
+                <StyledTreeItem nodeId={id} key={id} labelText={name} node={node} >
                     {node.children?.map((data:any)=> renderItem(data))}
                 </StyledTreeItem>
         )

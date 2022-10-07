@@ -5,8 +5,7 @@ import {Application} from '../../types/application';
 
 
 interface ISiteServiceDetail {
-    relation : Application[]
-    siteId: number;
+    relation? : any
 }
 
 const StyledTableCell = styled(TableCell)({
@@ -19,7 +18,6 @@ const SiteServiceDetail: FC<ISiteServiceDetail> = (props) => {
 
     const {relation} = props;
 
-    console.log(relation);
     if(!relation) {
         return <></>
     }
@@ -47,12 +45,6 @@ const SiteServiceDetail: FC<ISiteServiceDetail> = (props) => {
                                 </TableRow>
                             ))
                         }
-
-                        {/* <TableRow>
-                            <StyledTableCell>1</StyledTableCell>
-                            <StyledTableCell>2</StyledTableCell>
-                            <StyledTableCell>3</StyledTableCell>
-                        </TableRow> */}
                     </TableBody>
                 </Table>
 

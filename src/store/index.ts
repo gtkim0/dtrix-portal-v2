@@ -1,18 +1,23 @@
-import {configureStore} from "@reduxjs/toolkit";
+import { configureStore, Action, getDefaultMiddleware } from '@reduxjs/toolkit';
 import {setupListeners} from "@reduxjs/toolkit/query";
+import menuSlice from './slice/menuSlice';
 // import {userApi} from "./sliceApi/userApliSlice";
 import { privilegeApi } from "./sliceApi/privilegeApiSlice";
 import { privilegeGroupApi } from "./sliceApi/privilegeGroup";
 
+
+
 export const store = configureStore({
     reducer: {
-        // [userApi.reducerPath] : userApi.reducer,
+        menu: menuSlice.reducer,
         [privilegeApi.reducerPath] : privilegeApi.reducer,
         [privilegeGroupApi.reducerPath] :privilegeGroupApi.reducer        
     },
     middleware: (getDefaultMiddleware) =>
-        getDefaultMiddleware().concat(privilegeApi.middleware)
+        getDefaultMiddleware().concat(privilegeApi.middleware),
+    devTools:process.env.NODE_ENV ==="development"    
 })
 
-
+export type RootState = ReturnType<typeof store.getState>;
+export default store;
 setupListeners(store.dispatch);

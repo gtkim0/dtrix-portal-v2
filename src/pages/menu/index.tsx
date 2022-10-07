@@ -1,23 +1,15 @@
-import React, { ReactElement, ReactNode, useState } from 'react';
+import React, { ReactElement, ReactNode, useEffect, useState } from 'react';
 import { NextPage } from 'next';
 import Head from "next/head";
 import Layout from '../../components/Layout/layout';
 import { Box, Container,Grid,Typography, Divider, Card, Button} from '@mui/material';
-import { Form } from 'formik';
 import MenuListTable from '../../components/menuControl/menu-list';
-import NextLink from 'next/link';
-import { useTranslation } from 'react-i18next';
 import MenuAddModal from '../../components/menuControl/modal/menuAddModal';
-
-
-// TODO  사이트 관리자가 상세 메뉴를 설정하는 부분? 
-// 예를들어 board, dashboard 같은거는 전체 시스템 관리자가 만들었다고 치고, 
-// board 밑에 어떤 팀인지 등의 메뉴는 설정해줘야 함?
-// 여기서는 그룹정보? 같은게 필요함?
-
-// 메뉴에 생성하지만, 삭제도 가능해야한데, 폼을 어떻게 만들지
+import { useDispatch } from 'react-redux';
+import { getSidePrivilegeMenus } from '../../store/slice/menuSlice';
 
 const MenuControl:NextPage = () => {
+    const dispatch = useDispatch();
     const [addMenuModalOpen, setAddMenuModalOpen] = useState(false);
 
     const handleAddModalOpen = () => {
@@ -27,6 +19,10 @@ const MenuControl:NextPage = () => {
     const handleAddModalClose = () => {
         setAddMenuModalOpen(false);
     }
+
+    useEffect(()=> {
+        dispatch(getSidePrivilegeMenus());
+    },[])
 
     return (
         <>

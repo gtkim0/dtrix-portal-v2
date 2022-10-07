@@ -13,12 +13,12 @@ import {applicationApi} from "../../apis/application-api";
 import ApplicationListTable from "../../components/application/application-list-table";
 import {Application} from "../../types/application";
 interface Filters {
-    siteName? : string
+    applicationName? : string
 }
 
 type Sort =
-    | 'createAt-DESC'
-    | 'createAt-ASC';
+    | 'createdAt,DESC'
+    | 'createdAt,ASC';
 
 interface SortOption {
     value: Sort;
@@ -28,14 +28,13 @@ interface SortOption {
 const sortOptions: SortOption[] = [
     {
         label: '등록순 (newest)',
-        value: 'createAt-DESC'
+        value: 'createdAt,DESC'
     },
     {
         label: '등록순 (oldest)',
-        value: 'createAt-ASC'
+        value: 'createdAt,ASC'
     },
 ];
-
 
 const Applications:NextPage = () => {
     const {t} = useTranslation();
@@ -47,7 +46,7 @@ const Applications:NextPage = () => {
     const [sort,setSort] = useState<Sort>(sortOptions[0].value);
 
     const [filters,setFilters] = useState<Filters >({
-        siteName:''
+        applicationName:''
     })
     const handlePageChange = (event: React.MouseEvent<HTMLButtonElement> | null, newPage: number): void => {
         setPage(newPage);
@@ -61,7 +60,7 @@ const Applications:NextPage = () => {
         event.preventDefault();
         setFilters({
             ...filters,
-            siteName:queryRef.current?.value
+            applicationName:queryRef.current?.value
         })
     }
     const handleSortChange = (event: ChangeEvent<HTMLInputElement>): void => {
@@ -81,38 +80,38 @@ const Applications:NextPage = () => {
         }
     },[])
 
-    // const getSearchSite = useCallback(async (params:any) => {
-    //     try {
-    //         const result = await applicationApi,.(params);
-    //         const {data}:any = result;
-    //         if(result.code === 200) {
-    //             setTotal(data.totalElements);
-    //             setSites(data.content);
-    //         }
-    //     }catch (err){
-    //
-    //     }
-    // },[])
-
+    const getSearchApplication = useCallback(async (params:any) => {
+        try {
+            const result = await applicationApi.getSearchApplication(params);
+            console.log(result);
+            const {data}:any = result;
+            if(result.message === 'Success') {
+                setTotal(data.totalElements);
+                setApplications(data.content);
+            }
+        }catch (err){
+    
+        }
+    },[])
 
     useEffect(()=> {
         const params = {
             page:page,
             size:size,
-            // sortBy: sort
+            sort: sort,
         }
         getApplication(params);
     },[page,size])
 
-    // useEffect(()=> {
-    //     const params = {
-    //         page:page,
-    //         size:size,
-    //         sortBy: sort,
-    //         siteName: filters.siteName
-    //     }
-    //     getSearchSite(params);
-    // },[filters])
+    useEffect(()=> {
+        const params = {
+            page:page,
+            size:size,
+            sort: sort,
+            applicationName: filters.applicationName
+        }
+        getSearchApplication(params);
+    },[filters])
 
     return (
         <>

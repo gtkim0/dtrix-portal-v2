@@ -22,9 +22,7 @@ import { User } from "../../types/user";
 import {applicationApi} from "../../apis/application-api";
 import {Application} from '../../types/application';
 import { relationApi } from '../../apis/relation-api';
-interface ISiteCreateFormProps {
-
-}
+interface ISiteCreateFormProps {}
 
 const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
     const router = useRouter();
@@ -33,12 +31,8 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
     const [applications,setApplications] = useState<Application[]>([]);
     const [allChecked, setAllChecked] = useState<boolean>(false);
     const [selectedCheckList, setSelectedCheckList] = useState<number[]>([]);
-
     const [siteName,setSiteName] = useState<string>('');
-
     const [nameOverlapCheck,setNameOverlapCheck] = useState(false);
-
-
     const [page, setPage] = useState<number>(0);
     const [size, setSize] = useState<number>(10);
 
@@ -73,7 +67,6 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                 }
 
                 const result = await siteApi.createSite(values);
-                // TODO api 만든후 여기붙혀야함.
                 if(result && result.code ===200) {
                     const {data} = result; 
                     if(data) {
@@ -117,13 +110,15 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
     const handleCheckSiteName = useCallback(async () => {
         try {
             if(siteName === ""){
-                toast.error("아이디를 입력해주세요");
+                toast.error("이름을 입력해주세요");
                 return ;
             }
             const result = await siteApi.getExistsSiteName(siteName);
             if(result.data === true){
+                toast.error('중복된 이름입니다.')
                 setNameOverlapCheck(false);
             }else{
+                toast.success('사용 가능한 이름입니다.')
                 setNameOverlapCheck(true);
             }
         } catch (err) {
@@ -216,14 +211,13 @@ const SiteCreateForm: FC<ISiteCreateFormProps> = (props) => {
                                                 setNameOverlapCheck(false);
                                                 setSiteName(e.currentTarget.value);
                                             }}
-
-                                            // required
+                                            required
                                             value={formik.values.siteName}
                                         >
 
                                         </TextField>
                                     </Box>
-                                    <Button onClick={handleCheckSiteName} sx={{ position: 'absolute', right: '0', my: 'auto' }}>중복검사</Button>
+                                    <Button onClick={handleCheckSiteName} sx={{ position: 'absolute', right: '0',top:'10%', my: 'auto' }}>중복검사</Button>
                                 </Box>
                             </Grid>
 

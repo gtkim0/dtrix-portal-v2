@@ -4,6 +4,7 @@ export interface Result<T = any> {
 
 }
 import { } from '../types/application';
+import { AnyARecord } from "dns";
 
 const path ='/system/application'
 
@@ -16,6 +17,11 @@ class ApplicationApi {
 
     getApplication(id:string | string[] | undefined ) : Promise<any> {
         return instance.get<Result<any>,Result<any>>(`${path}/${id}`);
+    }
+
+
+    getSearchApplication(params?:any): Promise<any> {
+        return instance.get<Result<any>, Result<any>>(`${path}/search`, { params });
     }
 
     // application 생성

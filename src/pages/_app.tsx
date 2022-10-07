@@ -38,7 +38,17 @@ const App: FC<EnhancedAppProps> = (props: any) => {
                             })}
                             >
                                 <CookiesProvider>
-                                    <Toaster position={"top-center"} />
+                                    <Toaster 
+                                        position={"top-center"}
+                                        toastOptions={{
+                                            duration:1000,
+                                            success: {
+                                                duration:1000,
+                                            }
+                                        }}
+                                    
+                                     
+                                     />
                                     <AuthConsumer>
                                         {
                                             (auth) =>

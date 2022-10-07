@@ -1,20 +1,22 @@
 import React, {useEffect} from 'react';
 import type {FC} from 'react';
-import {Box, Drawer, Typography} from "@mui/material";
+import {Box, Drawer} from "@mui/material";
 import {isRootSize} from "../../utils/is-root";
-import Link from 'next/link';
-import PeopleIcon from '@mui/icons-material/People';
-import WebIcon from '@mui/icons-material/Web';
 import Menu from '../../components/menu/index';
 import {data1} from '../../data';
-import SplitPane from 'react-split-pane';
 import {headerSize} from "../../utils/is-root";
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store';
+import { fetchMenu } from '../../store/slice/menuSlice';
 
 interface ISideLayoutProps {
 
 }
 
 const SideLayout: FC<ISideLayoutProps> = (props) => {
+    const dispatch = useDispatch();
+    const refresh = useSelector((state:RootState)=> state.menu.menuCreateState);
+    const sideMenuList = useSelector((state:RootState)=>state.menu.menuList);
 
     const styles:any = {
         background: "#000",
@@ -22,13 +24,11 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
         cursor: "col-resize",
         margin: "0 5px",
         height: "100%",
-
-      };
+    };
 
     useEffect(() => {
-        //TODO 유저가 로그인할때 가지고있는 메뉴아이디와 , 메뉴리스트를 필터링하여 보여줌
-
-    }, [])
+        dispatch(fetchMenu());
+    }, [refresh])
 
     return (
         <>
@@ -40,7 +40,6 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                         sx: {
                             backgroundColor: '#2e313d', // 1200 이상 sidebar
                             // backgroundColor: 'white', // 1200 이상 sidebar
-
                             borderRightWidth: (theme) => theme.palette.mode === 'dark' ? 1 : 0,
                             color: 'black',
                             width: isRootSize(),
@@ -59,7 +58,9 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                         }}
                     >
                         {/* TODO 임시데이터 교체작업 */}
-                        <Menu menuData={data1} />
+                        {/* <Menu menuData={data1} /> */}
+                        <Menu menuData={sideMenuList} />
+
                     </Box>
                 </Drawer>
         </>

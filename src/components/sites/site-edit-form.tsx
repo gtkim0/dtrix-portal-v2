@@ -30,7 +30,6 @@ interface ISiteEditFormProps {
 
 const SiteEditForm: FC<ISiteEditFormProps> = (props) => {
     const { site, applicationList,relationList, ...rest } = props;
-    console.log(site);
     const [siteName,setSiteName] = useState<any>('');
     const [nameOverlapCheck,setNameOverlapCheck] = useState(false);
     const router = useRouter();
@@ -57,12 +56,10 @@ const SiteEditForm: FC<ISiteEditFormProps> = (props) => {
         }),
         onSubmit: async (values, helpers): Promise<void> => {
             try {
-
                 if(!nameOverlapCheck) {
                     alert("사이트 이름 중복검사 필요");
                     return ;
                 }
-
                 // @ts-ignore
                 const result = await siteApi.updateSite(values);
                 if (result && result.code === 200) {
@@ -105,7 +102,7 @@ const SiteEditForm: FC<ISiteEditFormProps> = (props) => {
         }
         try {
             const result = await userApi.getUsers(params);
-            const { total, list }: any = result.data;
+            const { list }: any = result.data;
             if (result) {
                 setUsers(list);
             }
@@ -114,13 +111,13 @@ const SiteEditForm: FC<ISiteEditFormProps> = (props) => {
         }
     }
 
-
     const [allChecked, setAllChecked] = useState<boolean>(false);
     const [selectedCheckList, setSelectedCheckList] = useState<number[]>([]);
 
     const handleAllChange = () => {
         setAllChecked(prev => !prev);
     }
+
     const handleChange = (e: React.ChangeEvent<HTMLInputElement>, id: number) => {
         let list = [...selectedCheckList];
         if (!list.includes(id)) {
@@ -159,7 +156,6 @@ const SiteEditForm: FC<ISiteEditFormProps> = (props) => {
         }
     },[site])
 
-
     useEffect(() => {
         getUser();
     }, [])
@@ -169,18 +165,23 @@ const SiteEditForm: FC<ISiteEditFormProps> = (props) => {
             if(siteName === ""){
                 toast.error("아이디를 입력해주세요");
                 return ;
+            }else if(siteName === site.siteName) {
+                toast.success('사용가능한 이름입니다.');
+                return ;
             }
+
             const result = await siteApi.getExistsSiteName(siteName);
             if(result.data === true){
                 setNameOverlapCheck(false);
+                toast.error('이름이 중복되었습니다.');
             }else{
                 setNameOverlapCheck(true);
+                toast.success('사용 가능한 이름입니다.')
             }
         } catch (err) {
             console.error(err);
         }
     }, [siteName])
-
 
     if(!applicationList) {
         return <></>
@@ -275,7 +276,7 @@ const SiteEditForm: FC<ISiteEditFormProps> = (props) => {
                             xs={12}
                         >
                             <FormGroup>
-                                <FormControlLabel control={<Checkbox name={"siteSso"} checked={formik.values.siteSso} onChange={formik.handleChange} />} label={"Sso 사용 여부"} />
+                                <FormControlLabel control={<Checkbox name={"siteSso"} checked={formik.values.siteSso} onChange={formik.handleChange} />} label={"SSO 사용 여부"} />
                             </FormGroup>
                         </Grid>
                     </Grid>
