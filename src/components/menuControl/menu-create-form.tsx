@@ -20,17 +20,22 @@ import { privilegeApi } from '../../apis/privilege-api';
 import { MenuType } from '../../types/menu';
 import { toast } from 'react-hot-toast';
 import { useDispatch } from 'react-redux';
-import {closeMenu, openMenu} from '../../store/slice/menuSlice';
-
+import {closeMenu} from '../../store/slice/menuSlice';
+import { styled } from '@mui/system';
 
 interface IMenuCreateFormProps {
     handleClose: any;
 }
 
+const StyledTableCell = styled(TableCell)({
+    textAlign: 'center',
+    whiteSpace: 'nowrap',
+})
+
 const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
 
     const dispatch = useDispatch(); 
-    // dispatch(openMenu());   
+    // dispatch(closeMenu());   
     const { handleClose } = props;
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(100);
@@ -67,6 +72,7 @@ const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
                     handleClose();
                     toast.success('메뉴 생성완료');
                     dispatch(closeMenu());
+
                 }else{
                     toast.error('메뉴 생성 오류')
                 }
@@ -80,15 +86,9 @@ const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
     const getPrivileges = async ({ page, size }: any) => {
         try {
             const result = await privilegeApi.getPrivileges({ page: page, size: size });
-            let namePrivilege: String[] = [];
-            if (result) {
-                result.data.list.map((data: any) => {
-                    namePrivilege.push(data);
-                })
-            }
-            setPrivilege(namePrivilege);
+            setPrivilege(result.data.list);
         } catch (err) {
-
+            console.error(err);
         }
     }
 
@@ -123,7 +123,6 @@ const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
     }
 
     const handleAddPrivilege = useCallback(() => {
-        
         setSelectedPrivilegeGroup((prevState: any) => [...prevState, privilegeGroup])
         setPrivilegeGroup({
             privilegeId: 0,  //초기값으로 변경시켜야함.
@@ -133,21 +132,13 @@ const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
             delYn: false
         })
     }, [privilegeGroup])
+    const [restPrivilege, setRestPrivilege] = useState<any>([]);
+    
+    const handleDeletePrivilege = useCallback((privilegeData:any)=> {
+        setSelectedPrivilegeGroup(selectedPrivilegeGroup.filter((data:any)=>data.privilegeId!==privilegeData.privilegeId))
 
-    useEffect(()=> {
-        let list:any = [];
-        if(privilege){
-            privilege.map((data:any)=> {
-                let id = data.privilegeId;
-                selectedPrivilegeGroup.map((data1:any)=> {
-                    if(id !== data1.privilegeId) {
-                        list.push(data);
-                    }
-                })
-            })
-        }
-        setPrivilege([...list]);
     },[selectedPrivilegeGroup])
+   
 
     useEffect(() => {
         getSideMenus();
@@ -156,6 +147,14 @@ const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
     useEffect(() => {
         getPrivileges({ page, size })
     }, [page, size])
+
+    useEffect(()=> {
+        // console.log()
+        if(privilege) {
+            let a = privilege.filter((item:any)=> selectedPrivilegeGroup.every((i:any)=>i.privilegeId !== item.privilegeId ))
+            setRestPrivilege(a);
+        }
+    },[selectedPrivilegeGroup,privilege])
 
     if (!privilege) {
         return <></>;
@@ -223,7 +222,7 @@ const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
                                     sx={{ width: 250 }}
                                 >
                                     {/* TODO 추후에 데이터받아와서 넣어주기 */}
-                                    {/* <MenuItem key=" " value=" ">없음</MenuItem> */}
+                                    <MenuItem key="0" value="0">메뉴 선택</MenuItem>
                                     {
                                         upMenuList.map((data: any) => (
                                             <MenuItem key={data.menuId} value={data.menuId}>{data.menuName}</MenuItem>
@@ -248,54 +247,40 @@ const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
                                 md={10}
                                 xs={12}
                             >
-                                {/* <Autocomplete
-                                    value={formik.values.menuAuthority}
-                                    onChange={formik.handleChange}
-                                    options={privilege}
-                                    onInputChange={(e,newInputValue)=> {
-                                        setInputValue(newInputValue);
-                                    }}
-
-                                    inputValue={inputValue}
-                                    sx={{width:250}}
-                                    renderInput={(params)=>
-                                        <TextField {...params} label={"그룹 추가"} />
-                                    }
-                                /> */}
                                 <TextField
                                     select
                                     name="menuPrivilege"
                                     // onBlur={formik.handleBlur}
                                     // value={formik.values.menuPrivilege}
-                                    // value={}
+                                    value={privilegeGroup.privilegeId}
                                     onChange={handlePrivilegeChange}
                                     sx={{ width: 250 }}
                                 >
                                     <MenuItem key="0" value="0">권한 선택</MenuItem>
-                                    {privilege.map((data: any) => (
+                                    {restPrivilege.map((data: any) => (
                                         <MenuItem value={data.privilegeId} key={data.privilegeId}>{data.privilegeName}</MenuItem>
                                     ))}
 
 
                                 </TextField>
                                 {
-                                    privilegeGroup.privilegeId !== 0 &&
+                                    Number(privilegeGroup.privilegeId) !== 0 &&
                                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                                        <Box sx={{ px: 2 }}>
-                                            <label>select</label>
-                                            <input name="selectYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
+                                        <Box sx={{ px: 2,display:'flex',alignItems:'center' }}>
+                                            <label style={{padding:'0 5px'}}>select</label>
+                                            <input style={{width:'18px',height:'18px'}} name="selectYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
                                         </Box>
-                                        <Box sx={{ px: 2 }}>
-                                            <label>insert</label>
-                                            <input name="insertYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
+                                        <Box sx={{ px: 2,display:'flex',alignItems:'center' }}>
+                                            <label style={{padding:'0 5px'}}>insert</label>
+                                            <input style={{width:'18px',height:'18px'}} name="insertYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
                                         </Box>
-                                        <Box sx={{ px: 2 }}>
-                                            <label>update</label>
-                                            <input name="updateYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
+                                        <Box sx={{ px: 2,display:'flex',alignItems:'center' }}>
+                                            <label style={{padding:'0 5px'}}>update</label>
+                                            <input style={{width:'18px',height:'18px'}} name="updateYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
                                         </Box>
-                                        <Box sx={{ px: 2 }}>
-                                            <label>del</label>
-                                            <input name="delYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
+                                        <Box sx={{ px: 2,display:'flex',alignItems:'center' }}>
+                                            <label style={{padding:'0 5px'}}>del</label>
+                                            <input style={{width:'18px',height:'18px'}} name="delYn" onChange={handlePrivilegeCheckChange} type="checkbox" />
                                         </Box>
                                         <Button onClick={handleAddPrivilege} variant="contained">추가</Button>
                                     </Box>
@@ -308,49 +293,58 @@ const MenuCreateForm: FC<IMenuCreateFormProps> = (props) => {
                                 item
                                 xs={12}
                                 md={12}
+                                sx={{float:'right',overflowY:'scroll',height:'300px'}}
                             >
+                                <Grid item xs={12} md={12}>
                                 <Table>
                                     <TableHead>
-                                        <TableCell>
+                                        <StyledTableCell>
                                             권한명
-                                        </TableCell>
-                                        <TableCell>
+                                        </StyledTableCell>
+                                        <StyledTableCell>
                                             보기
-                                        </TableCell>
-                                        <TableCell>
+                                        </StyledTableCell>
+                                        <StyledTableCell>
                                             생성
-                                        </TableCell>
-                                        <TableCell>
+                                        </StyledTableCell>
+                                        <StyledTableCell>
                                             수정
-                                        </TableCell>
-                                        <TableCell>
+                                        </StyledTableCell>
+                                        <StyledTableCell>
                                             삭제
+                                        </StyledTableCell>
+                                        <TableCell style={{width:'100px'}}>
+                                            
                                         </TableCell>
                                     </TableHead>
                                     <TableBody>
                                         {
                                             selectedPrivilegeGroup.map((data: any) => (
-                                                <TableRow key={data.privilegeId}>
-                                                    <TableCell>
+                                                <TableRow key={data.privilegeId} sx={{height:'10px'}}>
+                                                    <StyledTableCell>
                                                         {data.privilegeId}
-                                                    </TableCell>
-                                                    <TableCell>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell>
                                                         {data.selectYn ? "Y" : "N"}
-                                                    </TableCell>
-                                                    <TableCell>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell>
                                                         {data.insertYn ? "Y" : "N"}
-                                                    </TableCell>
-                                                    <TableCell>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell>
                                                         {data.updateYn ? "Y" : "N"}
-                                                    </TableCell>
-                                                    <TableCell>
+                                                    </StyledTableCell>
+                                                    <StyledTableCell>
                                                         {data.delYn ? "Y" : "N"}
+                                                    </StyledTableCell>
+                                                    <TableCell>
+                                                        <Button onClick={()=>handleDeletePrivilege(data)} variant='contained'>취소</Button>
                                                     </TableCell>
                                                 </TableRow>
                                             ))
                                         }
                                     </TableBody>
                                 </Table>
+                                </Grid>
                             </Grid>
                             }
                             
