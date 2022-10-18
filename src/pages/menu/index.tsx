@@ -81,7 +81,6 @@ const MenuControl:NextPage = () => {
     )
 }
 
-
 // @ts-ignore
 MenuControl.getLayout = (page:ReactElement):ReactNode => (
     <Layout>

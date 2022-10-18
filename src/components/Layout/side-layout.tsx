@@ -58,8 +58,8 @@ const SideLayout: FC<ISideLayoutProps> = (props) => {
                         }}
                     >
                         {/* TODO 임시데이터 교체작업 */}
-                        {/* <Menu menuData={data1} /> */}
-                        <Menu menuData={sideMenuList} />
+                        <Menu menuData={data1} />/
+                        {/* <Menu menuData={sideMenuList} /> */}
 
                     </Box>
                 </Drawer>

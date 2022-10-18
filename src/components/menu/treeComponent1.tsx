@@ -28,7 +28,10 @@ interface ITreeComponentProps  {
 }
 
 export const TreeComponent1:FC<ITreeComponentProps> = (props) => {
+
     const {menuData} = props;
+
+    console.log(menuData);
     const router = useRouter();
     // const {bgColor,color,labelIcon,labelInfo,labelText,...other} = props;
 

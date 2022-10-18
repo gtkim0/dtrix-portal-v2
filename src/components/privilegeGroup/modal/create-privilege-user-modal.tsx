@@ -141,22 +141,22 @@ const CreatePrivilegeUserModal: FC<ICreatePrivilegeUserModalProps> = (props) => 
                 >
                     <div className="p-5 bg-gray-100 flex flex-col" id="draggable-dialog-title">
                         <div>
-                            <button onClick={handleAddPrivilege} className="px-2 py-2 bg-gray-400 text-white float-left">
+                            <button onClick={handleAddPrivilege} className="px-1 py-1 mb-2 bg-gray-400 text-white float-left">
                                 선택
                             </button>
-                            <button onClick={handleClose} className='px-2 py-2 mb-2 bg-gray-700 text-white float-right'>
+                            <button onClick={handleClose} className='px-2 py-2 mb-2 bg-gray-700 text-white float-right w-8 h-8 flex justify-center items-center'>
                                 <CloseIcon />
                             </button>
                         </div>
                         <div>
-                            <table className="border-dash border-separate">
+                            <table>
                                 <thead>
-                                    <tr className="bg-gray-300 border-1">
-                                        <th className="p-2 border-2 text-center"><input type="checkbox" checked={allCheckStatus} onChange={handleAllChange} /></th>
-                                        <th className="p-2 border-2 w-60 text-center">아이디</th>
-                                        <th className="p-2 border-2 w-60 text-center">이름</th>
-                                        <th className="p-2 border-2 w-60 text-center">권한</th>
-                                        <th className="p-2 border-2 w-60 text-center">직급</th>
+                                    <tr className="bg-gray-300">
+                                        <th className="p-2 text-center"><input type="checkbox" checked={allCheckStatus} onChange={handleAllChange} /></th>
+                                        <th className="p-2 w-60 text-center">아이디</th>
+                                        <th className="p-2 w-60 text-center">이름</th>
+                                        <th className="p-2 w-60 text-center">권한</th>
+                                        <th className="p-2 w-60 text-center">직급</th>
                                     </tr>
                                 </thead>
                                 <tbody className=" border-gray-700">

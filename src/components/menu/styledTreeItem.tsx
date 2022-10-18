@@ -1,11 +1,9 @@
 import { styled } from '@mui/material/styles';
-import { TreeView, TreeItem, TreeItemProps, useTreeItem, TreeItemContentProps, treeItemClasses } from "@mui/lab";
+import {  TreeItem, treeItemClasses } from "@mui/lab";
 import {useRouter} from "next/router";
-import {Box, IconProps, SvgIcon, SvgIconProps, Typography} from "@mui/material";
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
-import { faPlus , faCircle } from '@fortawesome/free-solid-svg-icons';
+import {Box, Typography} from "@mui/material";
 
-const faPlusIcon = faPlus as IconProps;
+
 
 const StyledTreeItemRoot:any = styled(TreeItem)(({ theme }) => ({
     color: theme.palette.text.secondary,
@@ -41,18 +39,20 @@ const StyledTreeItemRoot:any = styled(TreeItem)(({ theme }) => ({
 
 
 export const StyledTreeItem = (props:any) => {
+    console.log(props);
     const {menuUrl,bgColor,color,labelIcon:LabelIcon,labelInfo,labelText,onClick,node,...other} = props;
     const router = useRouter();
 
     const viewPage = (e:any,node:any) => {
         //TODO child 가 있으면??  아니면 route 가 있으면? push 아니면 하위페이지 오픈
         if(node){
-            router.push(`${node.menuUrl}`);
+            console.log(node);
+            // router.push(`${node.menuUrl}`);
+            router.push(`${node.route}`);
+
         }
     }
 
-    //node 정보 즉 메뉴 정보에 url ,id 값 다들어있어야지.
-    // 그래야 + 버튼 누를때  url/new 를 하던가 , url/id 를 해서 조회할수있잖아
     return (
         <StyledTreeItemRoot
             label = {
@@ -62,9 +62,6 @@ export const StyledTreeItem = (props:any) => {
                         <Box component={LabelIcon} color="inherit" sx={{ mr: 1 }} />
                         :
                         <Box component={LabelIcon} color="inherit" sx={{ mr: 1 }} />
-                        // 여기 라벨 아이콘을, 
-                        // 하위 아이템이 있으면 폴더 아이콘으로,
-                        // 아니면 파일 아이콘으로 만들자.
                     }
 
                     <Typography onClick={(e)=>viewPage(e,node)} variant="body2" sx={{ fontWeight: 'inherit', flexGrow: 1, fontSize:'1rem' }}>

@@ -76,7 +76,6 @@ const PrivilegeGroup = () => {
         try {
             const result = await privilegeApi.getPrivileges(params);
             // const result = await privilegeApi.getPrivileges({page:0,size:10});
-
             if(result) {
                 const {total, list} = result.data;
                 setTotal(total);
@@ -84,6 +83,14 @@ const PrivilegeGroup = () => {
             }
         } catch (err) {
             console.error(err);
+        }
+    },[])
+
+    const handleDeleteDetailUserPrivilege = useCallback(async()=> {
+        try {
+            // const result = await privilegeApi.get
+        } catch (err) {
+            
         }
     },[])
 
@@ -136,7 +143,7 @@ const PrivilegeGroup = () => {
                         <div className="mt-10">
                             <div className="float-right">
                                 <button onClick={() => setCreateModalOpen(true)} className="px-2 py-1 bg-gray-500 text-white m-1">추가</button>
-                                <button className="px-2 py-1 bg-gray-500 text-white m-1">삭제</button>
+                                <button onClick={handleDeleteDetailUserPrivilege} className="px-2 py-1 bg-gray-500 text-white m-1">삭제</button>
                             </div>
                             <PrivilegeGroupDetailList detailPrivilegeId={detailPrivilegeId} />
                         </div>

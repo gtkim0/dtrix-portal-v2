@@ -1,34 +1,35 @@
-import React, {useState, useCallback, useEffect} from 'react';
-import type {FC} from 'react';
-import {Box, Container, Card, Divider, Grid,
-    TextField, Typography, Button,FormControlLabel, Checkbox, MenuItem,
-    TableHead,TableCell,Table,TableBody ,TableRow
+import React, { useState, useCallback, useEffect } from 'react';
+import type { FC } from 'react';
+import {
+    Box, Container, Card, Divider, Grid,
+    TextField, Typography, Button, FormControlLabel, Checkbox, MenuItem,
+    TableHead, TableCell, Table, TableBody, TableRow
 
 } from '@mui/material';
-import {useFormik} from "formik";
+import { useFormik } from "formik";
 import CardContent from '@mui/material/CardContent';
 import CardHeader from '@mui/material/CardHeader/CardHeader';
-import {toast} from 'react-hot-toast';
-import {useDispatch, useSelector} from 'react-redux';
-import {RootState} from '../../store/index'
+import { toast } from 'react-hot-toast';
+import { useDispatch, useSelector } from 'react-redux';
+import { RootState } from '../../store/index'
 import { getSidePrivilegeMenus } from '../../store/slice/menuSlice';
-import {privilegeApi} from '../../apis/privilege-api';
+import { privilegeApi } from '../../apis/privilege-api';
 import _, { isElement, isEmpty } from 'lodash';
-import {menuApi} from '../../apis/menu-api';
+import { menuApi } from '../../apis/menu-api';
 
 interface IMenuEditFormProps {
     handleClose: any;
-    editMenuInfo:any;
-    selectEditMenuInfo:any
+    editMenuInfo: any;
+    selectEditMenuInfo: any
 }
 
-const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
+const MenuEditForm: FC<IMenuEditFormProps> = (props) => {
     const dispatch = useDispatch();
-    // const selectEditMenuInfo:any = useSelector((state:RootState)=>state.menu.editMenuInfo);
-    const sideMenuList:any = useSelector((state:RootState)=>state.menu.menuList);
-    const {handleClose, editMenuInfo,selectEditMenuInfo} = props;
+    const sideMenuList: any = useSelector((state: RootState) => state.menu.menuList);
+    const { handleClose, editMenuInfo, selectEditMenuInfo } = props;
+    const [newSelect, setNewSelect] = useState(selectEditMenuInfo);
     const [privilege, setPrivilege] = useState<any>();
-    const [newPrivilege,setNewPrivilege] = useState<any>();
+    const [newPrivilege, setNewPrivilege] = useState<any>();
     const [selectedPrivilegeGroup, setSelectedPrivilegeGroup] = useState<any>([]);
     const [page, setPage] = useState(0);
     const [size, setSize] = useState(100);
@@ -42,41 +43,39 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
         delYn: false
     });
 
-    console.log(selectEditMenuInfo);
-
     const formik = useFormik({
         initialValues: {
-            siteId:1,
-            menuId:selectEditMenuInfo?.menuId,
-            menuName:selectEditMenuInfo?.menuName,        //메뉴 이름
-            menuParent:selectEditMenuInfo?.menuParent,       //상위 메뉴
-            menuPublicYn:selectEditMenuInfo?.menuPublicYn,
+            siteId: 1,
+            menuId: selectEditMenuInfo?.menuId,
+            menuName: selectEditMenuInfo?.menuName,        //메뉴 이름
+            menuParent: selectEditMenuInfo?.menuParent,       //상위 메뉴
+            menuPublicYn: selectEditMenuInfo?.menuPublicYn,
             menuOrder: selectEditMenuInfo?.menuOrder ? selectEditMenuInfo.menuOrder : 0,
-            menuPrivilege: '0' as any ,
+            menuPrivilege: '0' as any,
             menuDepth: selectEditMenuInfo?.menuDepth,
             menuUrl: selectEditMenuInfo?.menuUrl
         },
-        onSubmit: async (values, helpers):Promise<void> => {
+        onSubmit: async (values, helpers): Promise<void> => {
             const body = {
                 siteId: values.siteId,
                 menuId: values.menuId,
-                menuName:values.menuName,
+                menuName: values.menuName,
                 menuPublicYn: menuPublicYn ? 'Y' : 'N',
                 menuPrivilege: selectedPrivilegeGroup,
                 menuOrder: values.menuOrder,
                 menuUseYn: menuUseYn ? 'Y' : 'N',
                 menuDepth: values.menuDepth,
-                menuUrl:values.menuUrl,
-                menuParent:values.menuParent 
+                menuUrl: values.menuUrl,
+                menuParent: values.menuParent
             }
 
-            try {   
+            try {
                 const result = await menuApi.updateMenu(body);
-                if(Number(result) > 0) {
+                if (Number(result) > 0) {
                     helpers.setSubmitting(false);
                     toast.success('menu updated!');
                     handleClose();
-                }else{
+                } else {
                     toast.error('menu update fail')
                 }
             } catch (err) {
@@ -88,37 +87,14 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
         }
     })
 
-    // 권한 그룹 불러오는 api
+    // 전체 권한 그룹 불러오는 api
     const getPrivileges = async ({ page, size }: any) => {
         try {
             const result = await privilegeApi.getPrivileges({ page: page, size: size });
-            let namePrivilege: String[] = [];
-            if (result) {
-                result.data.list.map((data: any) => {
-                    namePrivilege.push(data);
-                })
-            }
-            setNewPrivilege(namePrivilege);
-            setPrivilege(namePrivilege);
+            setPrivilege(result.data.list);
         } catch (err) {
-
+            console.error(err);
         }
-    }
-
-    const handlePrivilegeCheckChange = (e:any) => {
-        const { name, checked } = e.target;
-        setPrivilegeGroup({
-            ...privilegeGroup,
-            [name]: checked
-        })
-    }
-
-    const handleMenuPublicChange = () => {
-        setMenuPublicYn(prev=>!prev);
-    }
-
-    const handleMenuUseYn = () => {
-        setMenuUseYn(prev=>!prev);
     }
 
     const handlePrivilegeChange = (e: any) => {
@@ -139,81 +115,69 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
         })
     }, [privilegeGroup])
 
-    const handlePrivilegeRemove = (data1:any) => {
-        let list:any = [];
-        selectedPrivilegeGroup.filter((data:any)=>data.privilegeId !== data1.privilegeId).map((data:any)=> {
+    const handlePrivilegeRemove = (data1: any) => {
+        let list: any = [];
+        selectedPrivilegeGroup.filter((data: any) => data.privilegeId !== data1.privilegeId).map((data: any) => {
             list.push(data);
         })
         setSelectedPrivilegeGroup(list);
     }
-    console.log(selectedPrivilegeGroup);
 
+     // 각 권한에 읽기,쓰기삭제 등 저장하는함수
+     const handlePrivilegeCheckChange = (e: any) => {
+        const { name, checked } = e.target;
+        setPrivilegeGroup({
+            ...privilegeGroup,
+            [name]: checked
+        })
+    }
 
-    useEffect(()=> {
-        if(selectEditMenuInfo){
-            setMenuPublicYn(selectEditMenuInfo.menuPublicYn=== "Y" ? true : false);
-            let list:any = [];
-            selectEditMenuInfo.privilegeList.map((data:any)=> {
-                list.push({
-                    privilegeId:data.privilegeId,
-                    selectYn: data.selectYn,
-                    insertYn: data.insertYn,
-                    updateYn: data.updateYn,
-                    delYn: data.delYn,
-                })
-            })
-            setSelectedPrivilegeGroup(list);
+    const handleMenuPublicChange = () => {
+        setMenuPublicYn(prev => !prev);
+    }
+
+    const handleMenuUseYn = () => {
+        setMenuUseYn(prev => !prev);
+    }
+
+    useEffect(() => {
+        if (selectEditMenuInfo) {
+            setMenuPublicYn(selectEditMenuInfo.menuPublicYn === "Y" ? true : false);
+            setSelectedPrivilegeGroup(selectEditMenuInfo.privilegeList);
         }
-    },[selectEditMenuInfo])
+    }, [selectEditMenuInfo])
 
-    useEffect(()=> {
-        let list:any = [];
-        const deepPrivilege = _.cloneDeep(newPrivilege);
-        console.log(deepPrivilege);
-        if(deepPrivilege){
-            for(let i= 0; i<deepPrivilege.length; i++){
-                let id = deepPrivilege[i].privilegeId;
-                let check = false;
-                let result = selectedPrivilegeGroup.find((data:any)=> {
-                    if(data.privilegeId === id){
-                        check = true;
-                    }else {
-                        check = false;
-                    }
-                    return check;
-                })
-                if(result) {
-                    continue ;
-                }else {
-                    list.push(deepPrivilege[i]);
-                }
-            }
+    const [restPrivilege, setRestPrivilege] = useState<any>();
+    useEffect(() => {
+        if (privilege) {
+            let a = privilege.filter((item: any) => selectedPrivilegeGroup.every((i: any) => i.privilegeId !== item.privilegeId))
+            setRestPrivilege(a);
         }
-        setPrivilege(list);
-    },[selectedPrivilegeGroup])
-    
+
+    }, [selectedPrivilegeGroup])
+
     useEffect(() => {
         getPrivileges({ page, size })
     }, [page, size])
 
-    useEffect(()=> {
-        // TODO 사이트 아이디 우선 1번 고정
+    useEffect(() => {
+        // TODO 사이트 아이디 우선 1번 고정, 추후 사이트 아이디 값 넣어줘야함.
         let body = {
-            menu_id:editMenuInfo.menuId,
-            site_id:1
+            menu_id: editMenuInfo.menuId,
+            site_id: 1
         }
         dispatch(getSidePrivilegeMenus(body))
-    },[editMenuInfo])
+    }, [editMenuInfo])
 
-    useEffect(()=> {
-        if(!isEmpty(selectEditMenuInfo)) {
+    useEffect(() => {
+        if (!isEmpty(selectEditMenuInfo)) {
             formik.setValues({
                 ...selectEditMenuInfo
             })
         }
-    },[selectEditMenuInfo])
+    }, [selectEditMenuInfo])
 
-    if(!selectEditMenuInfo){
+    if (!selectEditMenuInfo) {
         return <></>;
     }
 
@@ -233,9 +197,9 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                                 item
                                 md={2}
                                 xs={12}
-                                sx={{display:"flex"}}
+                                sx={{ display: "flex" }}
                             >
-                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <Typography sx={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     메뉴명
                                 </Typography>
                             </Grid>
@@ -244,23 +208,23 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                                 md={10}
                                 xs={12}
                             >
-                               <TextField
-                                fullWidth
-                                name="menuName"
-                                required
-                                onChange={formik.handleChange}
-                                onBlur={formik.handleBlur}
-                                value={formik.values.menuName}
-                               />
+                                <TextField
+                                    fullWidth
+                                    name="menuName"
+                                    required
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.menuName}
+                                />
                             </Grid>
-                            
+
                             <Grid
                                 item
                                 md={2}
                                 xs={12}
-                                sx={{display:"flex"}}
+                                sx={{ display: "flex" }}
                             >
-                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <Typography sx={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     상위메뉴
                                 </Typography>
                             </Grid>
@@ -269,30 +233,30 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                                 md={10}
                                 xs={12}
                             >
-                               <TextField
-                                 name="menuParent"
-                                 required
-                                 select
-                                 onChange={formik.handleChange}
-                                 onBlur={formik.handleBlur}
-                                 value={formik.values.menuParent}
-                                 sx={{width:250}}
-                               >
-                                {
-                                    sideMenuList.map((data:any)=> (
-                                        <MenuItem key={data.menuId} value={data.menuId}>{data.menuName}</MenuItem>
-                                    ))
-                                }
-                                
-                               </TextField>
+                                <TextField
+                                    name="menuParent"
+                                    required
+                                    select
+                                    onChange={formik.handleChange}
+                                    onBlur={formik.handleBlur}
+                                    value={formik.values.menuParent}
+                                    sx={{ width: 250 }}
+                                >
+                                    {
+                                        sideMenuList.map((data: any) => (
+                                            <MenuItem key={data.menuId} value={data.menuId}>{data.menuName}</MenuItem>
+                                        ))
+                                    }
+
+                                </TextField>
                             </Grid>
                             <Grid
                                 item
                                 md={2}
                                 xs={12}
-                                sx={{display:"flex"}}
+                                sx={{ display: "flex" }}
                             >
-                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <Typography sx={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     권한
                                 </Typography>
                             </Grid>
@@ -302,18 +266,18 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                                 md={10}
                                 xs={12}
                             >
-                               <TextField
-                                 name="menuPrivilege"
-                                 select
-                                 onChange={handlePrivilegeChange}
-                                 sx={{width:250}}
-                               >
-                               <MenuItem key="0" value="0">권한 선택</MenuItem>
-                                    {privilege?.map((data: any) => (
+                                <TextField
+                                    name="menuPrivilege"
+                                    select
+                                    onChange={handlePrivilegeChange}
+                                    sx={{ width: 250 }}
+                                >
+                                    <MenuItem key="0" value="0">권한 선택</MenuItem>
+                                    {restPrivilege?.map((data: any) => (
                                         <MenuItem value={data.privilegeId} key={data.privilegeId}>{data.privilegeName}</MenuItem>
                                     ))}
-                               </TextField>
-                               {
+                                </TextField>
+                                {
                                     Number(privilegeGroup.privilegeId) !== 0 &&
                                     <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                         <Box sx={{ px: 2 }}>
@@ -338,68 +302,68 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                             </Grid>
                             {
                                 selectedPrivilegeGroup && selectedPrivilegeGroup.length > 0 &&
-                            <Grid
-                                item
-                                xs={12}
-                                md={12}
-                            >
-                                <Table>
-                                    <TableHead>
-                                        <TableCell>
-                                            권한명
-                                        </TableCell>
-                                        <TableCell>
-                                            보기
-                                        </TableCell>
-                                        <TableCell>
-                                            생성
-                                        </TableCell>
-                                        <TableCell>
-                                            수정
-                                        </TableCell>
-                                        <TableCell>
-                                            삭제
-                                        </TableCell>
-                                        <TableCell>
+                                <Grid
+                                    item
+                                    xs={12}
+                                    md={12}
+                                >
+                                    <Table>
+                                        <TableHead>
+                                            <TableCell>
+                                                권한명
+                                            </TableCell>
+                                            <TableCell>
+                                                보기
+                                            </TableCell>
+                                            <TableCell>
+                                                생성
+                                            </TableCell>
+                                            <TableCell>
+                                                수정
+                                            </TableCell>
+                                            <TableCell>
+                                                삭제
+                                            </TableCell>
+                                            <TableCell>
 
-                                        </TableCell>
-                                    </TableHead>
-                                    <TableBody>
-                                        {
-                                            selectedPrivilegeGroup.map((data: any) => (
-                                                <TableRow key={data.privilegeId}>
-                                                    <TableCell>
-                                                        {data.privilegeId}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {data.selectYn ? "Y" : "N"}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {data.insertYn ? "Y" : "N"}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {data.updateYn ? "Y" : "N"}
-                                                    </TableCell>
-                                                    <TableCell>
-                                                        {data.delYn ? "Y" : "N"}
-                                                    </TableCell>
-                                                    <TableCell sx={{width:'100px'}}>
-                                                        <Button onClick={()=>handlePrivilegeRemove(data)} variant='contained'>삭제</Button>
-                                                    </TableCell>
-                                                </TableRow>
-                                            ))
-                                        }
-                                    </TableBody>
-                                </Table>
-                            </Grid>
+                                            </TableCell>
+                                        </TableHead>
+                                        <TableBody>
+                                            {
+                                                selectedPrivilegeGroup.map((data: any) => (
+                                                    <TableRow key={data.privilegeId}>
+                                                        <TableCell>
+                                                            {data.privilegeId}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.selectYn ? "Y" : "N"}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.insertYn ? "Y" : "N"}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.updateYn ? "Y" : "N"}
+                                                        </TableCell>
+                                                        <TableCell>
+                                                            {data.delYn ? "Y" : "N"}
+                                                        </TableCell>
+                                                        <TableCell sx={{ width: '100px' }}>
+                                                            <Button onClick={() => handlePrivilegeRemove(data)} variant='contained'>삭제</Button>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                ))
+                                            }
+                                        </TableBody>
+                                    </Table>
+                                </Grid>
                             }
                             <Grid
                                 item
                                 md={2}
                                 xs={12}
-                                sx={{display:"flex"}}
+                                sx={{ display: "flex" }}
                             >
-                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <Typography sx={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     public
                                 </Typography>
                             </Grid>
@@ -408,15 +372,15 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                                 md={10}
                                 xs={12}
                             >
-                               <FormControlLabel control={<Checkbox name="menuPublicYn" checked={menuPublicYn} value={menuPublicYn} onChange={handleMenuPublicChange} />} label="" />
+                                <FormControlLabel control={<Checkbox name="menuPublicYn" checked={menuPublicYn} value={menuPublicYn} onChange={handleMenuPublicChange} />} label="" />
                             </Grid>
                             <Grid
                                 item
                                 md={2}
                                 xs={12}
-                                sx={{display:"flex"}}
+                                sx={{ display: "flex" }}
                             >
-                               <Typography sx={{whiteSpace:'nowrap',display:'flex',alignItems:'center',justifyContent:'center'}}>
+                                <Typography sx={{ whiteSpace: 'nowrap', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
                                     useYn
                                 </Typography>
                             </Grid>
@@ -425,15 +389,15 @@ const MenuEditForm:FC<IMenuEditFormProps> = (props) => {
                                 md={10}
                                 xs={12}
                             >
-                               <FormControlLabel control={<Checkbox name="menuUseYn" checked={menuUseYn} value={menuUseYn} onChange={handleMenuUseYn} />} label="" />
+                                <FormControlLabel control={<Checkbox name="menuUseYn" checked={menuUseYn} value={menuUseYn} onChange={handleMenuUseYn} />} label="" />
                             </Grid>
                             <Grid
                                 item
                                 md={12}
                                 xs={12}
-                                sx={{textAlign:'center'}}
+                                sx={{ textAlign: 'center' }}
                             >
-                                <Button type="submit" sx={{m:2}} variant='contained'>수정</Button>
+                                <Button type="submit" sx={{ m: 2 }} variant='contained'>수정</Button>
                                 <Button onClick={handleClose} variant='contained'>취소</Button>
                             </Grid>
                         </Grid>

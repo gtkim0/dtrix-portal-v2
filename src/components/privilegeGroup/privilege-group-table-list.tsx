@@ -168,7 +168,7 @@ const PrivilegeGroupTableList:FC<PrivilegeGroupTableListProps> = (props) => {
                         <tr className="border-2" key={data.privilegeId}>
                             <td className="p-2 w-10 border-2 text-center"><input type="checkbox" onChange={(e)=>handleCheckChange(e,data.privilegeId)} checked={selectedList.includes(data.privilegeId)}/></td>
                             <td className="p-2 w-20 border-2 text-center">{data.privilegeId}</td>
-                            <td onClick={(e)=>handleCodeClick(e,data.privilegeId)} className="p-2 w-240 border-2 text-center cursor-pointer font-bold">{data.privilegeName}</td>
+                            <td onClick={(e)=>handleCodeClick(e,data.privilegeId)} className="p-2 w-240 border-2 text-center cursor-pointer">{data.privilegeName}</td>
                             <td className="p-2 w-120 border-2 text-center">{dateFormat(data.createdAt)}</td>
                         </tr>
                     ))}
