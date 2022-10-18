@@ -9,10 +9,10 @@ interface MenuProps {
 }
 
 const Menu:FC<MenuProps> = (props) => {
-
+    console.log(props);
     const {menuData} = props;
-    // return <TreeComponent1 menuData={menuData} />;
-    return <TreeComponent menuData={menuData} />;
+    return <TreeComponent1 menuData={menuData} />;
+    // return <TreeComponent menuData={menuData} />;
 }
 
 export default Menu;
