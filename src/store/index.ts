@@ -4,14 +4,15 @@ import menuSlice from './slice/menuSlice';
 // import {userApi} from "./sliceApi/userApliSlice";
 import { privilegeApi } from "./sliceApi/privilegeApiSlice";
 import { privilegeGroupApi } from "./sliceApi/privilegeGroup";
-
+import { boardApi } from './sliceApi/boardApiSlice';
 
 
 export const store = configureStore({
     reducer: {
         menu: menuSlice.reducer,
         [privilegeApi.reducerPath] : privilegeApi.reducer,
-        [privilegeGroupApi.reducerPath] :privilegeGroupApi.reducer        
+        [privilegeGroupApi.reducerPath] :privilegeGroupApi.reducer,
+        [boardApi.reducerPath] : boardApi.reducer,        
     },
     middleware: (getDefaultMiddleware) =>
         getDefaultMiddleware().concat(privilegeApi.middleware),

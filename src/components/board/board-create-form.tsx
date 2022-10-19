@@ -1,28 +1,21 @@
-import React, {useRef, useCallback, forwardRef, useState, useEffect} from 'react';
+import React, {useRef, useState, useEffect} from 'react';
 import type {FC} from 'react';
 import {
     Box,
     TextField,
     Button,
-    Grid,
-    Card,
     Divider,
-    MenuItem,
-    Switch,
-    FormGroup,
-    FormControlLabel, Typography, Autocomplete
+    Typography
 } from '@mui/material';
-// import { Editor as EditorType1, EditorProps } from '@toast-ui/react-editor';
 import '@toast-ui/editor/dist/toastui-editor.css';
-import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import 'tui-color-picker/dist/tui-color-picker.css';
 import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-syntax.css'
 import '@toast-ui/editor/dist/i18n/ko-kr';
+import colorSyntax from '@toast-ui/editor-plugin-color-syntax';
 import {useRouter} from "next/router";
-
-// import {Editor, Viewer} from '@toast-ui/react-editor';
 import dynamic from 'next/dynamic';
 import { boardApi } from '../../apis/board-api';
+import {useCreateBulletinMutation} from '../../store/sliceApi/boardApiSlice';
 
 const Editor = dynamic(()=> import('../../components/board/wrappedEditor'),{ssr:false});
 
@@ -33,74 +26,36 @@ const EditorWithForwardedRef = React.forwardRef((props:any, ref) => {
 );
 EditorWithForwardedRef.displayName="EditorWithForwardedRef";
 
-// const Editor = dynamic<EditorProps>(() => import('@toast-ui/react-editor').then(m => m.Editor), { ssr: false });
-
 const BoardCreateForm: FC<any> = (props) => {
+    const [createBulletin, result] = useCreateBulletinMutation();
 
+    const { boardId } = props;
     const router = useRouter();
+   
     const editorRef = useRef<any>(null);
-    const [content, setContent] = useState({html: '', md: ''})
-    const [anony, setAnony] = useState(false); // 익명여부
-    const [popup, setPopup] = useState(false); // popup여부
+    const [title,setTitle] = useState<string>('');
 
-    const [title,setTitle] = useState<any>('');
-
-    const options = ["영업부","자재부","생산부"];
-
-    const [group,setGroup] = useState<string | null>(options[0]);     //
-    const [inputValue, setInputValue] = React.useState(''); //검색
-
-    const handleChange = useCallback((e: any) => {
-        // const instance = editorRef.current?.getInstance();
-        // console.log(instance?.getHTML());
-        //
-        // if (!editorRef.current) {
-        //     return;
-        // }
-    }, [props, editorRef])
-
-
-    const handleSubmit = () => {
+    const handleSubmit = async() => {
         const instance = editorRef.current?.getInstance();
-
-
-        // TODO 게시글 생성 API 테스트
-        // const params = {
-        //     title: title,
-        //     content: instance.getHTML();
-        // }
-
-        // const result = boardApi.createBoard(params);
-        // if(result ==true) {
-        //     router.push(`/board`)
-        // }
-
-
-        if (instance) {
-            setContent({
-                html: instance.getHTML(),
-                md: instance.getMarkdown()
-            })
+        const params = {
+            menuId: boardId ,
+            title: title,
+            content: instance.getHTML()
         }
+        // TODO 성공 실패여부에따른 코드 정리필요
+        const result = await createBulletin(params);
+
+        // 성공일때
+        // router.push(`/board/${boardId}`);
     }
 
     const handleChangeTitle = (e:any) => {
         setTitle(e.target.value);
     }
 
-    // 익명여부
-    const handleAnony = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setAnony(prev => !prev);
-    }
-    const handlePopup = (e: React.ChangeEvent<HTMLInputElement>) => {
-        setPopup(prev=>!prev);
-    }
-
     const handleCancle = () => {
-        router.push("/board");
+        router.push(`/board/${boardId}`);
     }
-
-    //TODO 게시판 메뉴 불러오는 API 생성
 
     useEffect(()=> {
         if(editorRef.current){
@@ -108,60 +63,11 @@ const BoardCreateForm: FC<any> = (props) => {
         }
     },[])
 
-    // @ts-ignore
-
-
     return (
         <>
             <Box>
                 <Typography sx={{mb:1}} variant={"h5"}>게시글 생성</Typography>
                 <Divider />
-                <Box sx={{
-                    display: 'flex',
-                    mt:1
-                }}>
-                    <Autocomplete
-                        value={group}
-                        onChange={(e:any,newValue:string | null)=> {
-                            setGroup(newValue)
-                        }}
-                        options={options}
-                        onInputChange={(e,newInputValue)=> {
-                            setInputValue(newInputValue);
-                        }}
-
-                        inputValue={inputValue}
-                        sx={{width:'20%',display:'flex',justifyContent:'center',alignItems:'center'}}
-                        renderInput={(params)=>
-                            <TextField {...params} label={"그룹"} />
-                        }
-                    />
-                    <TextField
-                        sx={{
-                            flexGrow: 1,
-                            flexBasis: 200,
-                            m: 1.5
-                        }}
-                        fullWidth
-                        label="게시판 유형"
-                        select
-
-                    >
-                        <MenuItem>일반게시판</MenuItem>
-                        <MenuItem>일반게시판</MenuItem>
-                        <MenuItem>일반게시판</MenuItem>
-
-                    </TextField>
-
-                    {/*익명 여부는 체크박스로 표시.*/}
-                    <FormGroup sx={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
-                        <FormControlLabel sx={{m: 0}} labelPlacement={"start"}
-                                          control={<Switch value={anony} onChange={handleAnony}/>} label={"익명여부"}/>
-                        <FormControlLabel sx={{m: 0}} labelPlacement={"start"}
-                                          control={<Switch value={popup} onChange={handlePopup}/>} label={"팝업여부"}/>
-                    </FormGroup>
-                </Box>
-
                 <Box
                     component={"form"}
                     sx={{
@@ -186,13 +92,8 @@ const BoardCreateForm: FC<any> = (props) => {
                             initialValue={""}
                             initialEditType={"wysiwyg"}
                             hideModeSwitch={true}
-                            // onChange={handleChange}
                             height={"700px"}
                             plugins={[colorSyntax]}
-                            events={{
-                                change:handleChange,
-
-                            }}
                             // hooks={{
                             // 이미지 저장 할때 사용할 훅
                             // addImageBlobHook: async (blob,callback)=> {

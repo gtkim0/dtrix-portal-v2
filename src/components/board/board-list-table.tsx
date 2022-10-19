@@ -19,6 +19,7 @@ import {useAuth} from "../../hooks/use-auth";
 import BoardModal from './board-modal';
 
 interface IBoardListTableProps {
+    routeId:any;
     board:any;
     total:number;
     size:number;
@@ -45,11 +46,8 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
     const [open,setOpen] = useState(false);
     const [openId,setOpenId] = useState<number>(0);
 
-    const { board,total,size,page, onPageChange,onRowsPerPageChange } = props;
-    if(!board){
-        return null;
-    }
-    
+    const { board,total,size,page, onPageChange,onRowsPerPageChange,routeId } = props;
+   
     const handleOpenPopup = (id:any) => {
         setOpen(true);
         setOpenId(id);
@@ -59,39 +57,10 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
         setOpen(false);
     }
 
-    const getSelectWindow = (board:any) => {
-        // TODO
-        // board.popup 이 true 이면 popup으로 띄우기.
-        const popup = true;
-        if(popup){
-            return (
-                // TODO 팝업인지 새창인지 모르겠네.  -> modal 팝업창으로 수정
-                // <Link onClick={()=>window.open(`/board/${board.bulletinId}`)}>
-                //     <Typography sx={{cursor:'pointer'}}>
-                //         {board.bulletinId}
-                //     </Typography>
-                // </Link>
-                <Link onClick={()=>handleOpenPopup(board.bulletinId)}>
-                    <Typography sx={{cursor:'pointer'}}>
-                        {board.bulletinId}
-                    </Typography>
-                </Link>
-                
-
-            )
-        }else{
-            return (
-                <NextLink href={`/board/${board.bulletinId}`}>
-                    <Link sx={{textDecoration:'none'}}>
-                        <Typography sx={{cursor:'pointer'}}>
-                            {board.bulletinId}
-                        </Typography>
-                    </Link>
-                </NextLink>
-            )
-        }
+    if(!board){
+        return null;
     }
-    //TODO 유저정보 받아와서, 내가 적은 게시글이 아니라면, 수정아이콘이 안나오게해야함.
+
     return (
         <>
             <Table sx={{minWidth:700}}>
@@ -124,20 +93,6 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
                             key={board.bulletinId}
                         >
                             <TableCell sx={{pl:5}}>
-                                {/*{*/}
-                                {/*    // TODO 팝업 true 이면 새창으로 open*/}
-                                {/*    // board.ispopup && window.open()*/}
-                                {/*    <NextLink href={`/board/${board.bulletinId}`}>*/}
-                                {/*        <Link sx={{textDecoration:'none'}}>*/}
-                                {/*            <Typography sx={{cursor:'pointer'}}>*/}
-                                {/*                {board.bulletinId}*/}
-                                {/*            </Typography>*/}
-                                {/*        </Link>*/}
-                                {/*    </NextLink>*/}
-                                {/*}*/}
-                                {
-                                    getSelectWindow(board)
-                                }
                             </TableCell>
                             <TableCell>
                                 <Typography >
@@ -160,24 +115,8 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
                                 </Typography>
                             </TableCell>
                             <TableCell align={"right"}>
-                                {/*TODO 아래 */}
-                                {/*{*/}
-                                {/*    // 현재 로그인유저와, 게시글 작성자 번호가 같을때만 수정표시.*/}
-                                {/*    user.id === board.bulletinId ?*/}
-                                {/*        <NextLink*/}
-                                {/*            href={`/board/${board.bulletinId}/edit`}*/}
-                                {/*            passHref*/}
-                                {/*        >*/}
-                                {/*            <IconButton component="a">*/}
-                                {/*                <PencilAltIcon fontSize="small"/>*/}
-                                {/*            </IconButton>*/}
-                                {/*        </NextLink>*/}
-                                {/*        :*/}
-                                {/*        ""*/}
-                                {/*}*/}
-
                                 <NextLink
-                                    href={`/board/${board.bulletinId}/edit`}
+                                    href={`/board/${routeId}/${board.bulletinId}/edit`}
                                     passHref
                                 >
                                     <IconButton component="a">
@@ -185,7 +124,7 @@ const BoardListTable:FC<IBoardListTableProps> = (props) => {
                                     </IconButton>
                                 </NextLink>
                                 <NextLink
-                                    href={`/board/${board.bulletinId}`}
+                                    href={`/board/${routeId}/${board.bulletinId}`}
                                     passHref
                                 >
                                     <IconButton component="a">

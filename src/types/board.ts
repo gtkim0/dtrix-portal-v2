@@ -11,3 +11,13 @@ export interface Board extends BoardInfo {
 
 }
 
+export interface BoardType {
+    title:string,
+    writer:string,
+    regDate:string,
+    modDate:string,
+    menuId:number,
+    hits:number,
+    content:string,
+    bulletinId:number
+}

@@ -8,81 +8,64 @@ import '@toast-ui/editor-plugin-color-syntax/dist/toastui-editor-plugin-color-sy
 import '@toast-ui/editor/dist/i18n/ko-kr';
 import {useRouter} from "next/router";
 import { boardApi } from '../../apis/board-api';
-
+import { BoardType } from '../../types/board';
+import { useUpdateBulletinMutation, useDeleteBulletinMutation } from '../../store/sliceApi/boardApiSlice';
 
 interface IBoardEditFormProps {
-    board:any
+    board : BoardType;
 }
 
-
 const BoardEditForm:FC<IBoardEditFormProps> = (props) => {
-    const router = useRouter();
-    const id = Number(router.query.id);
-    const editorRef = useRef<Editor>(null);
+    const {board} = props;
+
+    const [updateBulletin, updateResult ] = useUpdateBulletinMutation();
+    const [deleteBulletin, deleteResult ] = useDeleteBulletinMutation();
+
     const [title,setTitle] = useState<string>('');
-    // const [content, setContent] = useState('')
-
-    const handleSubmit = () => {
+    const router = useRouter();
+    const editorRef = useRef<Editor>(null);
+    
+    const handleSubmit = async() => {
         const instance = editorRef.current?.getInstance();
-
-        //TODO 업데이트 api 제대로 실행되는지 확인.
-        //이미지 같은거 넣을수 있는지 확인
         const params = {
-            bulletinId: id,
+            bulletinId: board.bulletinId,
             title: title,
-            content: instance?.getHTML()
+            content: instance?.getHTML(),
         }
-
-        const result = boardApi.updateBoard(params);
-
-        // if(result === 'true'){
-        //     // 성공했을떄,
-        //     router.push(`/board`);
-        // }
-
-
-        // if (instance) {
-        //     setContent({
-        //         instance.getHTML(),
-        //     })
-        // }
+        const result = await updateBulletin(params);
     }
-
-
 
     const handleCancle = () => {
-        router.push("/board");
+        router.push(`/board/${board.menuId}`);
     }
 
-    const handleDeleteBoard = () => {
+    const handleDeleteBoard = async() => {
         const params = {
-            bulletinId: id,
+            bulletinId: board.bulletinId,
         }
-
-        // const result = boardApi.deleteBoard(params);
-        // if(result) {
-        //     // TODO
-        //     // result 가 성공일때 성공메세지같은거 띄워주고
-        // }else{
-        //     // 실패하면 에러메세지 띄워주기.
-        // }
+        try {
+            const result = await deleteBulletin(params);
+        } catch(err) {
+            console.error(err);
+        }
     }
 
-
-
-    // 게시글 수정시, 전에 저장되었던 content, title 불러와서 setHTML 해주기.
     useEffect(()=> {
-        setTitle(props.board.title);
+        setTitle(board.title);
         if(editorRef.current){
-            editorRef.current.getInstance().setHTML(props.board.content);
+            editorRef.current.getInstance().setHTML(board.content);
         }
-    },[props.board])
+    },[board])
 
     useEffect(()=> {
         // TODO
         // url 을 타고 edit 페이지를 들어올수 있으므로 로그인한 유저와, 게시글 작성자가
         // 같지 않다면, redirect 시켜서 board 로 보내는 작업 필요.
     },[])
+
+    if(!board) {
+        return <></>;
+    }
 
     return (
         <>
@@ -116,13 +99,6 @@ const BoardEditForm:FC<IBoardEditFormProps> = (props) => {
                         events={{change: handleSubmit}}
                         height={"700px"}
                         plugins={[colorSyntax]}
-
-                        // hooks={{
-                        // 이미지 저장 할때 사용할 훅
-                        // addImageBlobHook: async (blob,callback)=> {
-                        //     const url = await
-                        // }
-                        // }}
                     />
                 }
             </Box>
