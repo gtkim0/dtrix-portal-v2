@@ -63,6 +63,11 @@ const BoardEditForm:FC<IBoardEditFormProps> = (props) => {
         // 같지 않다면, redirect 시켜서 board 로 보내는 작업 필요.
     },[])
 
+
+    const handleChange = (e:React.ChangeEvent<HTMLInputElement>) => {
+        setTitle(e.target.value);
+    }
+
     if(!board) {
         return <></>;
     }
@@ -86,6 +91,7 @@ const BoardEditForm:FC<IBoardEditFormProps> = (props) => {
                     label="게시글 제목"
                     variant={"outlined"}
                     fullWidth
+                    onChange={handleChange}
                     value={title}
                 />
             </Box>
